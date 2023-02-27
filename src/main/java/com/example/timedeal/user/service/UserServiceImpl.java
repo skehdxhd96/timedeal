@@ -2,6 +2,7 @@ package com.example.timedeal.user.service;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
+import com.example.timedeal.user.dto.UserLoginRequest;
 import com.example.timedeal.user.dto.UserSaveRequest;
 import com.example.timedeal.user.dto.UserSaveResponse;
 import com.example.timedeal.user.dto.UserSelectResponse;
@@ -17,16 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    @Override
-    public void logIn() {
-
-    }
-
-    @Override
-    public void logOut() {
-
-    }
 
     @Transactional
     @Override
