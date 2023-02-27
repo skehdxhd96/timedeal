@@ -12,4 +12,16 @@ public enum UserType {
 
     private final String key;
     private final String value;
+
+    public static UserType of(String userType) {
+
+        switch(userType) {
+            case "CONSUMER":
+                return UserType.CONSUMER;
+            case "ADMINISTRATOR" :
+                return UserType.ADMINISTRATOR;
+            default :
+                throw new RuntimeException("존재하지 않는 유저타입 입니다.");
+        }
+    }
 }
