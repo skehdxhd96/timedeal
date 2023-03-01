@@ -17,12 +17,12 @@ public class UserSaveRequest {
     private String password;
 
     @NotBlank
-    private String userType;
+    private String address;
 
     @Builder
-    public UserSaveRequest(String userName, String password, String userType) {
+    public UserSaveRequest(String userName, String password, String address) {
         this.userName = userName;
         this.password = password;
-        this.userType = userType;
+        this.address = address;
     }
 }

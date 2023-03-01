@@ -2,8 +2,11 @@ package com.example.timedeal.user.service;
 
 import com.example.timedeal.user.dto.UserLoginRequest;
 
+import java.util.Optional;
+
 public interface LoginService {
 
-    public void logIn(UserLoginRequest request);
-    public void logOut();
+    void logIn(UserLoginRequest request);
+    void logOut();
+    String getCurrentLoginType();
 }

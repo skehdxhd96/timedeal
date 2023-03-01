@@ -2,17 +2,17 @@ package com.example.timedeal.user.entity;
 
 import com.example.timedeal.common.entity.baseEntity;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends baseEntity {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "Role")
+public abstract class User extends baseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -25,10 +25,9 @@ public class User extends baseEntity {
 
     private String password;
 
-    @Builder
-    public User(UserType userType, String userName, String password) {
-        this.userType = userType;
+    public User(String userName, String password, UserType userType) {
         this.userName = userName;
         this.password = password;
+        this.userType = userType;
     }
 }

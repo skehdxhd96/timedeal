@@ -2,10 +2,10 @@ package com.example.timedeal.user.service;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
-import com.example.timedeal.user.dto.UserLoginRequest;
 import com.example.timedeal.user.dto.UserSaveRequest;
 import com.example.timedeal.user.dto.UserSaveResponse;
 import com.example.timedeal.user.dto.UserSelectResponse;
+import com.example.timedeal.user.entity.Consumer;
 import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.entity.UserType;
 import com.example.timedeal.user.repository.UserRepository;
@@ -25,12 +25,14 @@ public class UserServiceImpl implements UserService {
 
         validatedDuplicatedUserName(request.getUserName());
 
-        User user = User.builder().userName(request.getUserName())
+        // admin용은 하나 더 만드는게 맞겠다.
+        Consumer user = Consumer.builder().userName(request.getUserName())
                 .password(request.getPassword())
-                .userType(UserType.of(request.getUserType()))
+                .address(request.getAddress())
+                .userType(UserType.CONSUMER)
                 .build();
 
-        User saveUser = userRepository.save(user);
+        Consumer saveUser = userRepository.save(user);
 
         return UserSaveResponse.of(saveUser);
     }
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
         User findUser = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
+        // TODO : 관리자용, 소비자용 selectDto 따로 있어야 됨.
         return UserSelectResponse.of(findUser);
     }
 

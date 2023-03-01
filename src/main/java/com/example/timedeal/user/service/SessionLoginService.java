@@ -3,38 +3,47 @@ package com.example.timedeal.user.service;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.user.dto.UserLoginRequest;
+import com.example.timedeal.user.dto.UserSaveResponse;
+import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class SessionLoginService implements LoginService {
 
+    private static final String USER_SESSION_KEY = "USER_ID";
     private final UserRepository userRepository;
+    private final HttpSession httpSession;
 
     @Override
     public void logIn(UserLoginRequest request) {
 
-        User user = userRepository.findByUserName(request.getUsername())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserNameAndPassword(request.getUsername(), request.getPassword())
+                .orElseThrow(() -> new BusinessException(ErrorCode.LOG_IN_FAILURE));
 
-        validateEqualUserNameAndPassword(user, request);
-
-        // TODO : 세션값을 생성해 Redis에 집어넣는다. Key - value : 세션키 - {Id, UserType}, 자료구조는 해시.
+        httpSession.setAttribute(USER_SESSION_KEY, UserSelectResponse.of(user));
     }
 
     @Override
     public void logOut() {
-        // TODO : 세션값을 삭제한다.
+        httpSession.invalidate();
     }
 
-    private void validateEqualUserNameAndPassword(User user, UserLoginRequest request) {
+    @Override
+    public String getCurrentLoginType() {
 
-        if(!user.getUserName().equals(request.getUsername())
-                || !user.getPassword().equals(request.getPassword())) {
-            throw new BusinessException(ErrorCode.LOG_IN_FAILURE);
+        Optional<Object> user = Optional.ofNullable(httpSession.getAttribute(USER_SESSION_KEY));
+
+        if(user.isEmpty()) {
+            return null;
         }
+
+        UserSelectResponse userType = (UserSelectResponse) user.get();
+        return userType.getUserType().equals("ADMINISTRATOR") ? "ADMINISTRATOR" : "CONSUMER";
     }
 }

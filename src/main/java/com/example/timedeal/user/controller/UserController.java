@@ -27,7 +27,6 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-
     @LoginCheck
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
@@ -50,13 +49,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public void logIn(@Valid @RequestBody UserLoginRequest request) {
+    public ResponseEntity<Void> logIn(@Valid @RequestBody UserLoginRequest request) {
         loginService.logIn(request);
+        return ResponseEntity.noContent().build();
     }
 
     @LoginCheck
     @PostMapping("/logout")
-    public void logOut(@Valid @RequestBody UserLoginRequest request) {
-        loginService.logIn(request);
+    public ResponseEntity<Void> logOut() {
+        loginService.logOut();
+        return ResponseEntity.noContent().build();
     }
 }
