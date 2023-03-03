@@ -1,4 +1,4 @@
-name: timedeal
+name: timedeal-pro
 
 on:
   pull_request:
