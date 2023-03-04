@@ -65,6 +65,6 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            sudo docker rm -f ${{ secrets.CONTAINER_NAME }}
+            sudo docker rm -f ${{ secrets.CONTAINER }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
-            sudo docker run -d -t --name ${{ secrets.CONTAINER_NAME }} -p 80:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
+            sudo docker run -d -t --name ${{ secrets.CONTAINER }} -p 80:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
