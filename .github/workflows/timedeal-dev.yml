@@ -67,4 +67,4 @@ jobs:
           script: |
             sudo docker rm -f ${{ secrets.CONTAINER_NAME }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
-            sudo docker run -d -t --name ${{ secrets.CONTAINER_NAME }} -p 8080:80 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
+            sudo docker run -d -t --name ${{ secrets.CONTAINER_NAME }} -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
