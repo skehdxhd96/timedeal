@@ -1,12 +1,16 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/timedeal?serverTimezone=UTC&characterEncoding=UTF-8
+    #    url: jdbc:mysql://localhost:3306/timedeal?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://118.67.143.40:3306/timedeal?serverTimezone=UTC&characterEncoding=UTF-8
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
-    host: localhost
+    #    host: localhost
+    host: 101.101.209.246
     port: 6379
+  session:
+    store-type: redis
   jpa:
     database: mysql
     open-in-view: false
@@ -18,3 +22,8 @@ spring:
       hibernate.show_sql: true
       hibernate.use_sql_comments: true
       hibernate.default_batch_fetch_size: 150
+
+server:
+  servlet:
+    session:
+      timeout: 1800
