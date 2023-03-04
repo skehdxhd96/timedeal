@@ -7,7 +7,6 @@ on:
     types: [ closed ]
     
   workflow_dispatch:
-  
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -54,7 +53,7 @@ jobs:
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.4.0
         env:
-          BUILD_NUMBER: ${{ github.ref.replace('refs/heads/', '') }}
+          BUILD_NUMBER: ${GITHUB_REF##*/}
         with:
           context: .
           push: true
@@ -63,7 +62,7 @@ jobs:
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         env:
-          BUILD_NUMBER: ${{ github.ref.replace('refs/heads/', '') }}
+          BUILD_NUMBER: ${GITHUB_REF##*/}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
