@@ -66,10 +66,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}:$BUILD_NUMBER
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PRO_IMAGE_NAME }}:$BUILD_NUMBER
           
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
+        env:
+          BUILD_NUMBER: ${{ steps.extract-feature-number.outputs.feature_number }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -77,5 +79,5 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             sudo docker rm -f ${{ secrets.CONTAINER_NAME }}
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
-            sudo docker run -d -t --name ${{ secrets.CONTAINER_NAME }} -p 80:8080 -p 81:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.IMAGE_NAME }}
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PRO_IMAGE_NAME }}:$BUILD_NUMBER
+            sudo docker run -d -t --name ${{ secrets.CONTAINER_NAME }} -p 80:8080 -p 81:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PRO_IMAGE_NAME }}:$BUILD_NUMBER
