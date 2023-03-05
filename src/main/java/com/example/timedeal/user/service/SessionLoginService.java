@@ -2,6 +2,7 @@ package com.example.timedeal.user.service;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
+import com.example.timedeal.user.dto.AuthUser;
 import com.example.timedeal.user.dto.UserLoginRequest;
 import com.example.timedeal.user.dto.UserSaveResponse;
 import com.example.timedeal.user.dto.UserSelectResponse;
@@ -16,7 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SessionLoginService implements LoginService {
 
-    private static final String USER_SESSION_KEY = "USER_ID";
+    public static final String USER_SESSION_KEY = "USER_ID";
     private final UserRepository userRepository;
     private final HttpSession httpSession;
 
@@ -26,7 +27,7 @@ public class SessionLoginService implements LoginService {
         User user = userRepository.findByUserNameAndPassword(request.getUsername(), request.getPassword())
                 .orElseThrow(() -> new BusinessException(ErrorCode.LOG_IN_FAILURE));
 
-        httpSession.setAttribute(USER_SESSION_KEY, UserSelectResponse.of(user));
+        httpSession.setAttribute(USER_SESSION_KEY, AuthUser.of(user));
     }
 
     @Override
@@ -43,7 +44,13 @@ public class SessionLoginService implements LoginService {
             return null;
         }
 
-        UserSelectResponse userType = (UserSelectResponse) user.get();
-        return userType.getUserType().equals("ADMINISTRATOR") ? "ADMINISTRATOR" : "CONSUMER";
+        AuthUser findUser = (AuthUser) user.get();
+        return findUser.getUsertype().equals("ADMINISTRATOR") ? "ADMINISTRATOR" : "CONSUMER";
+    }
+
+    @Override
+    public Long getCurrentUser() {
+        AuthUser currentUser = (AuthUser) httpSession.getAttribute(USER_SESSION_KEY);
+        return currentUser.getId();
     }
 }

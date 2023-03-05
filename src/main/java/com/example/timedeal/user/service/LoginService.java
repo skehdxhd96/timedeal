@@ -9,4 +9,5 @@ public interface LoginService {
     void logIn(UserLoginRequest request);
     void logOut();
     String getCurrentLoginType();
+    Long getCurrentUser();
 }

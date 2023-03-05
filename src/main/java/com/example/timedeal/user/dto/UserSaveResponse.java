@@ -2,8 +2,10 @@ package com.example.timedeal.user.dto;
 
 import com.example.timedeal.user.entity.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class UserSaveResponse {
 
     private Long id;

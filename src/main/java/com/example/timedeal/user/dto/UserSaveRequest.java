@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 public class UserSaveRequest {
 
     @NotBlank
-    private String userName;
+    private String username;
 
     @NotBlank
     private String password;
@@ -20,8 +20,8 @@ public class UserSaveRequest {
     private String address;
 
     @Builder
-    public UserSaveRequest(String userName, String password, String address) {
-        this.userName = userName;
+    public UserSaveRequest(String username, String password, String address) {
+        this.username = username;
         this.password = password;
         this.address = address;
     }
