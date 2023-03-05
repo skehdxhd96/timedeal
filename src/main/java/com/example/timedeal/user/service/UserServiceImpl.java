@@ -23,10 +23,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserSaveResponse joinMember(UserSaveRequest request) {
 
-        validatedDuplicatedUserName(request.getUserName());
+        validatedDuplicatedUserName(request.getUsername());
 
         // admin용은 하나 더 만드는게 맞겠다.
-        Consumer user = Consumer.builder().userName(request.getUserName())
+        Consumer user = Consumer.builder().userName(request.getUsername())
                 .password(request.getPassword())
                 .address(request.getAddress())
                 .userType(UserType.CONSUMER)

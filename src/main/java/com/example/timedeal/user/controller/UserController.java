@@ -1,20 +1,20 @@
 package com.example.timedeal.user.controller;
 
-import com.example.timedeal.common.annotation.AdminCheck;
 import com.example.timedeal.common.annotation.LoginCheck;
-import com.example.timedeal.user.dto.UserLoginRequest;
-import com.example.timedeal.user.dto.UserSaveRequest;
-import com.example.timedeal.user.dto.UserSaveResponse;
-import com.example.timedeal.user.dto.UserSelectResponse;
+import com.example.timedeal.common.exception.BusinessException;
+import com.example.timedeal.common.exception.ErrorCode;
+import com.example.timedeal.user.dto.*;
 import com.example.timedeal.user.service.LoginService;
 import com.example.timedeal.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
-@RestController(value = "/api/v1/user")
+import static com.example.timedeal.user.service.SessionLoginService.USER_SESSION_KEY;
+
+@RestController
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -27,25 +27,23 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-    @LoginCheck
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
-        userService.deleteMember(id);
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMember(@SessionAttribute(name = USER_SESSION_KEY, required = false) AuthUser currentUser) {
+
+        validateUserLogin(currentUser);
+
+        loginService.logOut();
+        userService.deleteMember(currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 
-    @LoginCheck
-    @GetMapping("/{id}")
-    public ResponseEntity<UserSelectResponse> findMember(@PathVariable Long id) {
-        UserSelectResponse userResponse = userService.findMember(id);
+    @GetMapping("/myPage")
+    public ResponseEntity<UserSelectResponse> findMember(@SessionAttribute(name = USER_SESSION_KEY, required = false) AuthUser currentUser) {
+
+        validateUserLogin(currentUser);
+
+        UserSelectResponse userResponse = userService.findMember(currentUser.getId());
         return ResponseEntity.ok(userResponse);
-    }
-
-    @AdminCheck
-    @GetMapping("/all")
-    public void findAllMembers() {
-
-         // TODO : 최대한 부하가 안걸리게끔 리스트를 가져와야 함.
     }
 
     @PostMapping("/login")
@@ -59,5 +57,11 @@ public class UserController {
     public ResponseEntity<Void> logOut() {
         loginService.logOut();
         return ResponseEntity.noContent().build();
+    }
+
+    private void validateUserLogin(AuthUser currentUser) {
+        if(currentUser == null) {
+            throw new BusinessException(ErrorCode.LOG_IN_ESSENTIAL);
+        }
     }
 }
