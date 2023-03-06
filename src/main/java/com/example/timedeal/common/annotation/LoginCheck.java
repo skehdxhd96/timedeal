@@ -8,4 +8,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LoginCheck {
+
+    Role role() default Role.GENERAL;
+
+    enum Role {
+        GENERAL, ADMINISTRATOR;
+    }
 }
