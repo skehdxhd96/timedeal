@@ -20,4 +20,8 @@ public class ProductDtoAssembler {
                 .eventStartTime(request.getEventStartTime())
                 .build();
     }
+
+    public static ProductSelectResponse toResponse(Product product) {
+        product.getDealType()
+    }
 }

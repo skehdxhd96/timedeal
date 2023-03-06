@@ -45,4 +45,15 @@ public class Product extends baseEntity {
         this.eventEndTime = eventEndTime;
         this.description = description;
     }
+
+    public void updateEventType() {
+
+    }
+
+    public void update() {
+
+    }
+
+    // TODO : Builder 직접 구현. DealType - eventStartTime / eventEndTime 호환성을 위해
+    // TODO : 아예 상품 이벤트 타입을 변경하는 API / Method를 따로만들까??
 }
