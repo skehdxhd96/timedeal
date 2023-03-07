@@ -41,11 +41,11 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
-    @PutMapping("/{id}/event")
-    public ResponseEntity<ProductSelectResponse> updateEvent(@PathVariable Long id, @Valid @RequestBody) {
-
-    }
+//    @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
+//    @PutMapping("/{id}/event")
+//    public ResponseEntity<ProductSelectResponse> updateEvent(@PathVariable Long id, @Valid @RequestBody) {
+//
+//    }
 
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
     @PutMapping("/{id}")

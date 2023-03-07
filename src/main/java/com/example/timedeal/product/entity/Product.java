@@ -1,7 +1,7 @@
 package com.example.timedeal.product.entity;
 
+import com.example.timedeal.Event.entity.ProductEvent;
 import com.example.timedeal.common.entity.baseEntity;
-import com.example.timedeal.user.entity.Administrator;
 import com.example.timedeal.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "product")
@@ -25,35 +24,19 @@ public class Product extends baseEntity {
     @JoinColumn(name = "administrator_id")
     private User createdBy;
 
-    @Enumerated(value = EnumType.STRING)
-    private DealType dealType;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_event_id")
+    private ProductEvent productEvent;
 
     private String productName;
     private int productPrice;
-    private LocalDateTime eventStartTime;
-    private LocalDateTime eventEndTime;
     private String description;
 
     @Builder
-    public Product(User createdBy, DealType dealType, String productName, int productPrice,
-                   LocalDateTime eventStartTime, LocalDateTime eventEndTime, String description) {
+    public Product(User createdBy, String productName, int productPrice, String description) {
         this.createdBy = createdBy;
-        this.dealType = dealType;
         this.productName = productName;
         this.productPrice = productPrice;
-        this.eventStartTime = eventStartTime;
-        this.eventEndTime = eventEndTime;
         this.description = description;
     }
-
-    public void updateEventType() {
-
-    }
-
-    public void update() {
-
-    }
-
-    // TODO : Builder 직접 구현. DealType - eventStartTime / eventEndTime 호환성을 위해
-    // TODO : 아예 상품 이벤트 타입을 변경하는 API / Method를 따로만들까??
 }

@@ -1,7 +1,5 @@
 package com.example.timedeal.product.dto;
 
-import com.example.timedeal.product.entity.DealType;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

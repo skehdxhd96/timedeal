@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService{
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-
+        return new ProductSelectResponse();
     }
 
     @Override
@@ -54,6 +54,6 @@ public class ProductServiceImpl implements ProductService{
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        ProductDtoAssembler.
+        return new ProductSelectResponse();
     }
 }
