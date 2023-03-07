@@ -59,4 +59,6 @@ public class UserController {
         loginService.logOut();
         return ResponseEntity.noContent().build();
     }
+
+    // 특정 유저의 구매한 상품리스트
 }

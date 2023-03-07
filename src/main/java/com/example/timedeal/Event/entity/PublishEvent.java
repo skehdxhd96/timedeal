@@ -52,4 +52,9 @@ public class PublishEvent extends baseEntity {
 
         this.event = event;
     }
+
+    public void register(ProductEvent productEvent) {
+        this.productEvents.add(productEvent);
+        productEvent.setEvent(this);
+    }
 }

@@ -2,7 +2,7 @@ package com.example.timedeal.product.service;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
-import com.example.timedeal.product.dto.ProductDtoAssembler;
+import com.example.timedeal.product.dto.ProductAssembler;
 import com.example.timedeal.product.dto.ProductSaveRequest;
 import com.example.timedeal.product.dto.ProductSelectResponse;
 import com.example.timedeal.product.dto.ProductUpdateRequest;
@@ -12,8 +12,6 @@ import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public Long register(User currentUser, ProductSaveRequest request) {
 
-        Product product = ProductDtoAssembler.product(currentUser, request);
+        Product product = ProductAssembler.product(currentUser, request);
 
         Product newProduct = productRepository.save(product);
 
@@ -42,18 +40,25 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public ProductSelectResponse update(User currentUser, Long id, ProductUpdateRequest request) {
 
-        Product product = productRepository.findById(id)
+        Product findProduct = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        return new ProductSelectResponse();
+        Product newProduct = ProductAssembler.product(currentUser, request, id);
+
+        findProduct.update(newProduct);
+
+        return new ProductSelectResponse(newProduct);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ProductSelectResponse findDetails(Long id) {
+
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        return new ProductSelectResponse();
+        // 이벤트 데이터랑 같이 다 가져와야 함.
+
+        return new ProductSelectResponse(product);
     }
 }

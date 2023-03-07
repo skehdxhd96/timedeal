@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PublishEventSelectResponse {
 
+    private Long id;
     private String eventName;
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
@@ -18,6 +19,7 @@ public class PublishEventSelectResponse {
 
     @Builder
     public PublishEventSelectResponse(PublishEvent publishEvent) {
+        this.id = publishEvent.getId();
         this.eventName = publishEvent.getEventName();
         this.eventStartTime = publishEvent.getEventStartTime();
         this.eventEndTime = publishEvent.getEventEndTime();

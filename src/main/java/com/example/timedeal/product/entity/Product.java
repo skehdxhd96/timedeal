@@ -24,8 +24,7 @@ public class Product extends baseEntity {
     @JoinColumn(name = "administrator_id")
     private User createdBy;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_event_id")
+    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE)
     private ProductEvent productEvent;
 
     private String productName;
@@ -33,10 +32,17 @@ public class Product extends baseEntity {
     private String description;
 
     @Builder
-    public Product(User createdBy, String productName, int productPrice, String description) {
+    public Product(Long id, User createdBy, String productName, int productPrice, String description) {
+        this.id = id;
         this.createdBy = createdBy;
         this.productName = productName;
         this.productPrice = productPrice;
         this.description = description;
+    }
+
+    public void update(Product product) {
+        this.productName = product.getProductName();
+        this.productPrice = product.getProductPrice();
+        this.description = product.getDescription();
     }
 }

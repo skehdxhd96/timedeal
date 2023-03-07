@@ -41,12 +41,6 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-//    @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
-//    @PutMapping("/{id}/event")
-//    public ResponseEntity<ProductSelectResponse> updateEvent(@PathVariable Long id, @Valid @RequestBody) {
-//
-//    }
-
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
     @PutMapping("/{id}")
     public ResponseEntity<ProductSelectResponse> update(
@@ -64,4 +58,10 @@ public class ProductController {
         ProductSelectResponse productSelectResponse = productService.findDetails(id);
         return ResponseEntity.ok(productSelectResponse);
     }
+
+    // 상품에 이벤트를 등록한다.
+
+    // 상품의 이벤트를 해지한다.
+
+    // 상품의 주문 이력을 조회한다.
 }

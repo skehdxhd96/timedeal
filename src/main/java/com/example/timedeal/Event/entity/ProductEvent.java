@@ -2,6 +2,8 @@ package com.example.timedeal.Event.entity;
 
 import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.common.entity.baseEntity;
+import com.example.timedeal.common.exception.BusinessException;
+import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.entity.Product;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,6 +25,18 @@ public class ProductEvent extends baseEntity {
     @JoinColumn(name = "publish_event_id")
     private PublishEvent publishEvent;
 
-    @OneToOne(mappedBy = "productEvent")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "product_id")
     private Product product;
+
+    public void setEvent(PublishEvent publishEvent) {
+
+        if(this.publishEvent != null) {
+            throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
+        }
+
+        this.publishEvent = publishEvent;
+    }
+
+
 }

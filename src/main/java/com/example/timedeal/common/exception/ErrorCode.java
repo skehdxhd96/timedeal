@@ -12,6 +12,7 @@ public enum ErrorCode {
     LOG_IN_FAILURE(500, "로그인에 실패했습니다. 아이디 및 비밀번호를 다시한번 확인해주세요", "LOG_IN_FAILURE"),
     LOG_IN_ESSENTIAL(500, "로그인이 필요합니다.", "LOG_IN_ESSENTIAL"),
     ALREADY_PUBLISEHD(500, "이미 발행된 이벤트입니다.", "ALREADY_PUBLISHED"),
+    ALREADY_HAS_EVENT(500, "이미 이벤트에 등록된 상품입니다. 먼저 등록된 이벤트를 해제해주세요", "ALREADY_HAS_EVENT"),
     ADMINISTRATOR_ONLY(500, "관리자 기능입니다. 관리자에게 문의해주세요", "ADMINISTRATOR_ONLY");
 
     private final int code;
