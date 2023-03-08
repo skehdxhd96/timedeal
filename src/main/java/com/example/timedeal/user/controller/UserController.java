@@ -1,9 +1,12 @@
 package com.example.timedeal.user.controller;
 
+import com.example.timedeal.common.annotation.CurrentUser;
 import com.example.timedeal.common.annotation.LoginCheck;
+import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.user.dto.*;
+import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.service.LoginService;
 import com.example.timedeal.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -27,22 +30,20 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+    @LoginCheck
     @DeleteMapping
-    public ResponseEntity<Void> deleteMember(@SessionAttribute(name = USER_SESSION_KEY, required = false) AuthUser currentUser) {
-
-        validateUserLogin(currentUser);
+    public ResponseEntity<Void> deleteMember(@CurrentUser User currentUser) {
 
         loginService.logOut();
-        userService.deleteMember(currentUser.getId());
+        userService.deleteMember(currentUser);
         return ResponseEntity.noContent().build();
     }
 
+    @LoginCheck
     @GetMapping("/myPage")
-    public ResponseEntity<UserSelectResponse> findMember(@SessionAttribute(name = USER_SESSION_KEY, required = false) AuthUser currentUser) {
+    public ResponseEntity<UserSelectResponse> findMember(@CurrentUser User currentUser) {
 
-        validateUserLogin(currentUser);
-
-        UserSelectResponse userResponse = userService.findMember(currentUser.getId());
+        UserSelectResponse userResponse = userService.findMember(currentUser);
         return ResponseEntity.ok(userResponse);
     }
 
@@ -59,9 +60,5 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    private void validateUserLogin(AuthUser currentUser) {
-        if(currentUser == null) {
-            throw new BusinessException(ErrorCode.LOG_IN_ESSENTIAL);
-        }
-    }
+    // 특정 유저의 구매한 상품리스트
 }

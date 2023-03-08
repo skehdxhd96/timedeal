@@ -2,10 +2,8 @@ package com.example.timedeal.user.service;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
-import com.example.timedeal.user.dto.AuthUser;
+import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.user.dto.UserLoginRequest;
-import com.example.timedeal.user.dto.UserSaveResponse;
-import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,21 +34,7 @@ public class SessionLoginService implements LoginService {
     }
 
     @Override
-    public String getCurrentLoginType() {
-
-        Optional<Object> user = Optional.ofNullable(httpSession.getAttribute(USER_SESSION_KEY));
-
-        if(user.isEmpty()) {
-            return null;
-        }
-
-        AuthUser findUser = (AuthUser) user.get();
-        return findUser.getUsertype().equals("ADMINISTRATOR") ? "ADMINISTRATOR" : "CONSUMER";
-    }
-
-    @Override
-    public Long getCurrentUser() {
-        AuthUser currentUser = (AuthUser) httpSession.getAttribute(USER_SESSION_KEY);
-        return currentUser.getId();
+    public AuthUser getCurrentUser() {
+        return (AuthUser) httpSession.getAttribute(USER_SESSION_KEY);
     }
 }
