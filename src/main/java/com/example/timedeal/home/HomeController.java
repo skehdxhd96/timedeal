@@ -9,6 +9,6 @@ public class HomeController {
     @GetMapping("/home")
     public String homeController() {
 
-        return "Hello, This is Branch 3";
+        return "Hello, Redis Scale Up";
     }
 }
