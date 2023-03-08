@@ -21,8 +21,8 @@ public class Consumer extends User{
     private String address;
 
     @Builder
-    public Consumer(String userName, String password, UserType userType, String address) {
-        super(userName, password, userType);
+    public Consumer(Long id, String userName, String password, UserType userType, String address) {
+        super(id, userName, password, userType);
         this.address = address;
     }
 }

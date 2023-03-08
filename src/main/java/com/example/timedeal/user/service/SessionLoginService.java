@@ -40,7 +40,7 @@ public class SessionLoginService implements LoginService {
 
         Optional<Object> user = Optional.ofNullable(httpSession.getAttribute(USER_SESSION_KEY));
 
-        if(user.isEmpty()) {
+        if(!user.isPresent()) {
             return null;
         }
 

@@ -15,4 +15,8 @@ import javax.persistence.*;
 @Getter
 public class Administrator extends User{
 
+
+    public Administrator(Long id, String userName, String password, UserType userType) {
+        super(id, userName, password, userType);
+    }
 }
