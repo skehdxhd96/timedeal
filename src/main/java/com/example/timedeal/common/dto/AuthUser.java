@@ -1,7 +1,6 @@
-package com.example.timedeal.user.dto;
+package com.example.timedeal.common.dto;
 
 import com.example.timedeal.user.entity.User;
-import com.example.timedeal.user.entity.UserType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -39,25 +39,23 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteMember(Long id) {
+    public void deleteMember(User user) {
 
         // TODO : 구매에 성공해서 배달중인 데이터가 있다면 Exception
+        // TODO : Select시 User로 검색하면 findById 2번나감
 
-        userRepository.deleteById(id);
+        userRepository.delete(user);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public UserSelectResponse findMember(Long id) {
+    public UserSelectResponse findMember(User user) {
 
         // TODO : 내가 구매한 상품 목록도 가져와야 함. => 이걸 여기서 한번에 가져오는게 좋은가 / 아니면 따로따로 API를 나누는게 좋은가?
         // TODO : API 나누고, Figma 그림에서 <내가 구매한 상품> 탭을 하나 만들어서 그 버튼을 눌렀을 때만 해당 API를 호출하도록 설계
 
-        User findUser = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
         // TODO : 관리자용, 소비자용 selectDto 따로 있어야 됨.
-        return UserSelectResponse.of(findUser);
+        return UserSelectResponse.of(user);
     }
 
     private void validatedDuplicatedUserName(String username) {
