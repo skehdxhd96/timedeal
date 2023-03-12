@@ -28,7 +28,3 @@ server:
     session:
       timeout: 1800
 
-logging:
-  level:
-    root: debug
-
