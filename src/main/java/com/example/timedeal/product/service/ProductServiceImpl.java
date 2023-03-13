@@ -68,12 +68,10 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional(readOnly = true)
-    public ProductSelectResponse findDetails(Long id) {
+    public Product findDetails(Long id) {
 
-        Product product = productRepository.findProductDetailById(id)
+        return productRepository.findProductDetailById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
-
-        return ProductSelectResponse.of(product);
     }
 
     @Override

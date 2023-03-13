@@ -6,6 +6,7 @@ import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.dto.*;
+import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.service.ProductService;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +61,9 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductSelectResponse> showDetails(@PathVariable Long id) {
-        ProductSelectResponse productSelectResponse = productService.findDetails(id);
-        return ResponseEntity.ok(productSelectResponse);
+        Product product = productService.findDetails(id);
+
+        return ResponseEntity.ok(ProductSelectResponse.of(product));
     }
 
     // 요청방식 : ?page=pageNo

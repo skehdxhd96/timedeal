@@ -1,6 +1,7 @@
 package com.example.timedeal.product.service;
 
 import com.example.timedeal.product.dto.*;
+import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ public interface ProductService {
 
     ProductSelectResponse update(User currentUser, Long id, ProductUpdateRequest request);
 
-    ProductSelectResponse findDetails(Long id);
+    Product findDetails(Long id);
 
     Page<ProductSelectResponse> findAllProducts(Pageable pageable, ProductSearchRequest searchRequest);
 
