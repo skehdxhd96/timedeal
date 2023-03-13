@@ -32,6 +32,9 @@ public class PublishEvent extends baseEntity {
     @OneToMany(mappedBy = "publishEvent")
     private List<ProductEvent> productEvents = new ArrayList<>();
 
+    @Enumerated(value = EnumType.STRING)
+    private EventStatus eventStatus;
+
     private String eventName;
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
@@ -61,5 +64,15 @@ public class PublishEvent extends baseEntity {
 
         this.productEvents.add(productEvent);
         productEvent.setEvent(this);
+    }
+
+    public void isInProgress() {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if(this.eventStartTime.isAfter(now)
+            || this.eventEndTime.isBefore(now)) {
+            throw new BusinessException(ErrorCode.NOT_IN_PROGRESSING);
+        }
     }
 }

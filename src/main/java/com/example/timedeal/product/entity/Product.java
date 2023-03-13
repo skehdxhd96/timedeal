@@ -28,17 +28,22 @@ public class Product extends baseEntity {
     @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE)
     private ProductEvent productEvent;
 
+    @Enumerated(value = EnumType.STRING)
+    private ProductStatus productStatus;
+
     private String productName;
     private int productPrice;
     private String description;
+    private int totalStock;
 
     @Builder
-    public Product(Long id, User createdBy, String productName, int productPrice, String description) {
+    public Product(Long id, User createdBy, String productName, int productPrice, String description, int totalStock) {
         this.id = id;
         this.createdBy = createdBy;
         this.productName = productName;
         this.productPrice = productPrice;
         this.description = description;
+        this.totalStock = totalStock;
     }
 
     public void update(Product product) {
@@ -48,6 +53,7 @@ public class Product extends baseEntity {
         this.productName = product.getProductName();
         this.productPrice = product.getProductPrice();
         this.description = product.getDescription();
+        // 재고 수량 업데이트 쳐도 되나 ..?
     }
 
     public void validatedOnEvent() {
@@ -55,6 +61,20 @@ public class Product extends baseEntity {
         if(this.productEvent != null) {
             throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
         }
+    }
+
+    public void validatedStock() {
+
+        if(this.productEvent == null) validatedGeneralProduct();
+        else validatedEventProduct();
+    }
+
+    private void validatedEventProduct() {
+
+    }
+
+    private void validatedGeneralProduct() {
+
     }
 
     public void assignEvent(ProductEvent productEvent) {
