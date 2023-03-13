@@ -1,7 +1,10 @@
 package com.example.timedeal.product.controller;
 
+import com.example.timedeal.product.dto.ProductSearchRequest;
+import com.example.timedeal.product.dto.ProductSelectRequest;
 import com.example.timedeal.product.dto.ProductSelectResponse;
 import com.example.timedeal.product.service.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +26,7 @@ public class AllEvent implements EventType{
     }
 
     @Override
-    public List<ProductSelectResponse> find(String eventName, Pageable pageable) {
-        return productService.findAllProducts(eventName, pageable);
+    public Page<ProductSelectResponse> find(Pageable pageable, String eventName, ProductSearchRequest request) {
+        return productService.findAllProducts(pageable, request);
     }
 }

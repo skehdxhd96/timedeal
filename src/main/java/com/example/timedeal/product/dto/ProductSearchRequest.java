@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 public class ProductSearchRequest {
 
     private String searchKeyword;
-    private int searchPrice;
+    private String searchPrice;
 
-    public ProductSearchRequest(String searchKeyword, int searchPrice) {
+    public ProductSearchRequest(String searchKeyword, String searchPrice) {
         this.searchKeyword = searchKeyword;
         this.searchPrice = searchPrice;
     }

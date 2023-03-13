@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "product_event")
@@ -27,20 +28,26 @@ public class ProductEvent extends baseEntity {
     @JoinColumn(name = "publish_event_id")
     private PublishEvent publishEvent;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
+    @OneToOne(mappedBy = "productEvent")
     private Product product;
 
-    public ProductEvent(Product product) {
+    public ProductEvent(Product product, PublishEvent publishEvent) {
         this.product = product;
+        this.publishEvent = publishEvent;
     }
 
-    public void setEvent(PublishEvent publishEvent) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductEvent that = (ProductEvent) o;
+        return Objects.equals(getId(), that.getId())
+                && Objects.equals(getPublishEvent().getId(), that.getPublishEvent().getId())
+                && Objects.equals(product.getId(), that.getProduct().getId());
+    }
 
-        if(this.publishEvent != null) {
-            throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
-        }
-
-        this.publishEvent = publishEvent;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getPublishEvent(), getProduct());
     }
 }

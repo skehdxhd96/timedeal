@@ -6,6 +6,8 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
+import javax.annotation.PostConstruct;
+
 @EnableCaching
 @EnableRedisHttpSession
 @EnableJpaAuditing
@@ -15,5 +17,4 @@ public class TimedealApplication {
     public static void main(String[] args) {
         SpringApplication.run(TimedealApplication.class, args);
     }
-
 }

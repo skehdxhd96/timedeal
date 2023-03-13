@@ -9,6 +9,7 @@ import com.example.timedeal.product.dto.*;
 import com.example.timedeal.product.service.ProductService;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -38,22 +39,22 @@ public class ProductController {
     }
 
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> delete(@PathVariable Long productId) {
 
-        productService.remove(id);
+        productService.remove(productId);
         return ResponseEntity.noContent().build();
     }
 
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
-    @PutMapping("/{id}")
+    @PutMapping("/{productId}")
     public ResponseEntity<ProductSelectResponse> update(
-            @PathVariable Long id,
+            @PathVariable Long productId,
             @Valid @RequestBody ProductUpdateRequest request,
             @CurrentUser User currentUser
     ) {
-        ProductSelectResponse productSelectResponse = productService.update(currentUser, id, request);
-        String redirectUrl = String.format(REDIRECTED_URL, id);
+        ProductSelectResponse productSelectResponse = productService.update(currentUser, productId, request);
+        String redirectUrl = String.format(REDIRECTED_URL, productId);
         return ResponseEntity.created(URI.create(redirectUrl)).body(productSelectResponse);
     }
 
@@ -65,25 +66,20 @@ public class ProductController {
 
     // 요청방식 : ?page=pageNo
     @GetMapping
-    public ResponseEntity<List<ProductSelectResponse>> getAllProducts(
+    public ResponseEntity<Page<ProductSelectResponse>> getAllProducts(
+            @ModelAttribute ProductSearchRequest request,
             @RequestParam(required = false, defaultValue = "all") String eventName,
             @PageableDefault Pageable pageable
-            ) {
+        ) {
 
         EventType eventType = eventTypes.stream()
                 .filter(type -> type.isOnEvent(eventName))
                 .findAny()
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_MATCHING));
 
-        List<ProductSelectResponse> productList = eventType.find(eventName, pageable);
+        Page<ProductSelectResponse> productList = eventType.find(pageable, eventName, request);
 
         return ResponseEntity.ok(productList);
-    }
-
-    // 검색어, 가격으로 특정 상품을 검색한다.
-    @GetMapping
-    public void searchProduct(@ModelAttribute ProductSearchRequest request) {
-
     }
 
     // 상품에 이벤트를 등록한다.
@@ -106,5 +102,5 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
-    // 상품의 주문 이력을 조회한다.
+    // 상품의 주문 이력을 조회한다. 재고 이후.
 }

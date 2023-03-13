@@ -25,7 +25,8 @@ public class Product extends baseEntity {
     @JoinColumn(name = "administrator_id")
     private User createdBy;
 
-    @OneToOne(mappedBy = "product", cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_event_id")
     private ProductEvent productEvent;
 
     private String productName;
@@ -41,27 +42,26 @@ public class Product extends baseEntity {
         this.description = description;
     }
 
+    public void validateOnEvent() {
+        if(this.productEvent != null) {
+            throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
+        }
+    }
+
     public void update(Product product) {
 
-        validatedOnEvent();
+        validateOnEvent();
 
         this.productName = product.getProductName();
         this.productPrice = product.getProductPrice();
         this.description = product.getDescription();
     }
 
-    public void validatedOnEvent() {
-
-        if(this.productEvent != null) {
-            throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
-        }
-    }
-
     public void assignEvent(ProductEvent productEvent) {
         this.productEvent = productEvent;
     }
 
-    public void terminateEvent() {
+    public void terminate() {
         this.productEvent = null;
     }
 }

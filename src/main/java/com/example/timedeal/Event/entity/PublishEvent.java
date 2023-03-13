@@ -5,6 +5,7 @@ import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.entity.ProductEvent;
+import com.example.timedeal.product.entity.ProductEvents;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,8 +30,8 @@ public class PublishEvent extends baseEntity {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @OneToMany(mappedBy = "publishEvent")
-    private List<ProductEvent> productEvents = new ArrayList<>();
+    @Embedded
+    private ProductEvents productEvents;
 
     private String eventName;
     private LocalDateTime eventStartTime;
@@ -56,10 +57,13 @@ public class PublishEvent extends baseEntity {
 
     public void register(Product product) {
 
-        ProductEvent productEvent = new ProductEvent(product);
-        product.assignEvent(productEvent);
+        ProductEvent productEvent = new ProductEvent(product, this);
+        productEvents.add(productEvent);
+    }
 
-        this.productEvents.add(productEvent);
-        productEvent.setEvent(this);
+    public void terminate(Product product) {
+
+        ProductEvent productEvent = new ProductEvent(product, this);
+        productEvents.remove(productEvent);
     }
 }

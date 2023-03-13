@@ -11,12 +11,15 @@ import com.example.timedeal.product.repository.ProductEventRepository;
 import com.example.timedeal.product.repository.ProductRepository;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,24 +42,24 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    public void remove(Long id) {
+    public void remove(Long productId) {
 
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        product.validatedOnEvent();
+        product.validateOnEvent();
 
-        productRepository.deleteById(id);
+        productRepository.delete(product);
     }
 
     @Override
     @Transactional
-    public ProductSelectResponse update(User currentUser, Long id, ProductUpdateRequest request) {
+    public ProductSelectResponse update(User currentUser, Long productId, ProductUpdateRequest request) {
 
-        Product findProduct = productRepository.findById(id)
+        Product findProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        Product newProduct = ProductAssembler.product(currentUser, request, id);
+        Product newProduct = ProductAssembler.product(currentUser, request, productId);
 
         findProduct.update(newProduct);
 
@@ -75,36 +78,38 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductSelectResponse> findAllProducts(String eventName, Pageable pageable) {
+    public Page<ProductSelectResponse> findAllProducts(Pageable pageable, ProductSearchRequest searchRequest) {
 
-        productRepository.findAll(pageable);
+        return productRepository.findAllProducts(pageable, searchRequest).map(ProductSelectResponse::of);
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(key = "#eventName+#pageable.pageNumber",
-                value = "eventProduct")
-    public List<ProductSelectResponse> findAllProductsOnEvent(String eventName, Pageable pageable) {
+                value = "eventProduct") // eventProduct : {#eventName+#pageNumber : xxx, #eventName+#pageNumber, yyy}
+    public Page<ProductSelectResponse> findAllProductsOnEvent(Pageable pageable, String eventName) {
 
+        return productRepository.findAllProductOnEvent(pageable, eventName).map(ProductSelectResponse::of);
     }
 
     @Override
     @Transactional
-    public void assignEvent(Long id, ProductEventRequest request) {
+    @CacheEvict(value = "eventProduct", )
+    public void assignEvent(Long productId, ProductEventRequest request) {
 
         boolean isExists = productEventRepository.
-                existsByProductIdAndPublishEventId(id, request.getPublishEventId());
+                existsByProductIdAndPublishEventId(productId, request.getPublishEventId());
 
         if(isExists) {
             throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
         }
 
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
         PublishEvent publishEvent = publishEventRepository.findById(request.getPublishEventId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));
 
-        publishEvent.register(product); // 안돼면 Cascade 옵션 우선 고려해보자.
+        publishEvent.register(product);
     }
 
     @Override
@@ -113,9 +118,9 @@ public class ProductServiceImpl implements ProductService{
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+        PublishEvent publishEvent = publishEventRepository.findById(request.getPublishEventId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));
 
-        product.terminateEvent(); // CASACDE로 해결 되나 ?
-
-        productEventRepository.deleteById(request.getPublishEventId());
+        publishEvent.terminate(product);
     }
 }
