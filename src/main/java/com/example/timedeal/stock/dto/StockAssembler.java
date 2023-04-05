@@ -19,7 +19,7 @@ public class StockAssembler {
         return StockHistory.builder()
                 .consumerId(currentUser.getId())
                 .price(totalPrice)
-                .purchaseCode()
+//                .purchaseCode()
                 .build();
     }
 }

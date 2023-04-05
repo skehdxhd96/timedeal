@@ -26,7 +26,7 @@ public class ProductSelectResponse {
 
         this.id = product.getId();
         this.productName = product.getProductName();
-        this.productPrice = product.getProductPrice();
+//        this.productPrice = product.getProductPrice();
         this.description = product.getDescription();
         this.eventName = publishEvent.getEventName();
         this.eventStartTime = publishEvent.getEventStartTime();

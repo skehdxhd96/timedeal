@@ -32,5 +32,6 @@ public class OrderServiceImpl implements OrderService{
         /* 주문 진행 */
 
         /* 롤백 로직 => 이벤트 큐를 쓰면 더 효율적이나 시간상 이벤트 큐는 나중으로 미룬다. */
+        return new OrderSelectResponse();
     }
 }

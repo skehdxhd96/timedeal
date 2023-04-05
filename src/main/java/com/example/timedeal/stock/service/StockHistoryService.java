@@ -34,7 +34,7 @@ public class StockHistoryService {
         /* 재고 감소 */
 
         /* 히스토리 추가 */
-        stockHistoryRepository.save()
+//        stockHistoryRepository.save()
     }
 
 }

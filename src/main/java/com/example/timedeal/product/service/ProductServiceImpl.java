@@ -92,7 +92,7 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    @CacheEvict(value = "eventProduct", )
+//    @CacheEvict(value = "eventProduct", )
     public void assignEvent(Long productId, ProductEventRequest request) {
 
         boolean isExists = productEventRepository.

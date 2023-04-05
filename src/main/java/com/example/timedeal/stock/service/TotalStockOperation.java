@@ -33,7 +33,7 @@ public class TotalStockOperation implements StockOperation{
             public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
                 redisOperations.multi();
                 for(int count = 1; count <= stock.getQuantity(); count++) {
-                    redisOperations.opsForSet().add(key, stock.getPurchaseCode().get(count).toString());
+//                    redisOperations.opsForSet().add(key, stock.getPurchaseCode().get(count).toString());
                 }
                 return redisOperations.exec();
             }
@@ -46,7 +46,7 @@ public class TotalStockOperation implements StockOperation{
         String key = generateKey(stock.getProductId());
 
         for(int count = 1; count <= stock.getQuantity(); count++) {
-            redisOperations.opsForSet().remove(key, stock.getPurchaseCode().get(count).toString());
+//            redisOperations.opsForSet().remove(key, stock.getPurchaseCode().get(count).toString());
         }
     }
 
