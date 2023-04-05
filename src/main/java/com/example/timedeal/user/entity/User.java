@@ -2,6 +2,7 @@ package com.example.timedeal.user.entity;
 
 import com.example.timedeal.common.entity.baseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +26,8 @@ public abstract class User extends baseEntity {
 
     private String password;
 
-    public User(String userName, String password, UserType userType) {
+    public User(Long id, String userName, String password, UserType userType) {
+        this.id = id;
         this.userName = userName;
         this.password = password;
         this.userType = userType;

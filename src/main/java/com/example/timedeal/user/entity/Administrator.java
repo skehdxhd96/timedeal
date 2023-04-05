@@ -23,4 +23,7 @@ public class Administrator extends User{
 
     @OneToMany(mappedBy = "createdBy")
     private List<Event> events;
+    public Administrator(Long id, String userName, String password, UserType userType) {
+        super(id, userName, password, userType);
+    }
 }
