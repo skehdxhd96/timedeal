@@ -13,6 +13,10 @@ public enum ErrorCode {
     LOG_IN_ESSENTIAL(500, "로그인이 필요합니다.", "LOG_IN_ESSENTIAL"),
     ALREADY_PUBLISEHD(500, "이미 발행된 이벤트입니다.", "ALREADY_PUBLISHED"),
     ALREADY_HAS_EVENT(500, "이미 이벤트에 등록된 상품입니다. 먼저 등록된 이벤트를 해제해주세요", "ALREADY_HAS_EVENT"),
+    EVENT_NOT_MATCHING(500, "해당 이벤트 상품이 존재하지 않습니다.", "EVENT_NOT_MATCHING"),
+    PUBLISH_NOT_YET(500, "이벤트 발행이 필요합니다.", "PUBLISH_NOT_YET"),
+    NOT_IN_PROGRESSING(500, "이벤트 진행 기간이 아닙니다.", "NOT_IN_PROGRESSING"),
+    NOT_ENOUGH_STOCK(500, "재고가 부족합니다.", "NOT_ENOUGH_STOCK"),
     ADMINISTRATOR_ONLY(500, "관리자 기능입니다. 관리자에게 문의해주세요", "ADMINISTRATOR_ONLY");
 
     private final int code;

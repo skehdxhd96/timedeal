@@ -1,14 +1,14 @@
 package com.example.timedeal.user.entity;
 
+import com.example.timedeal.order.entity.Order;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "consumer")
@@ -17,6 +17,9 @@ import javax.persistence.Table;
 @DiscriminatorValue(value = "CUSTOMER")
 @Getter
 public class Consumer extends User{
+
+    @OneToMany(mappedBy = "orderedBy")
+    private List<Order> orders = new ArrayList<>();
 
     private String address;
 

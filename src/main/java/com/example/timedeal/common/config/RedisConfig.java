@@ -1,13 +1,18 @@
 package com.example.timedeal.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
@@ -22,8 +27,9 @@ public class RedisConfig {
     @Value("${spring.redis.port}")
     private int port;
 
-    @Bean({"redisConnectionFactory", "redisSessionConnectionFactory"})
-    public RedisConnectionFactory redisSessionConnectionFactory() {
+    @Bean
+    @ConditionalOnMissingBean(RedisConnectionFactory.class)
+    public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(host);
         redisStandaloneConfiguration.setPort(port);
@@ -38,15 +44,9 @@ public class RedisConfig {
     }
 
     @Bean
-    public StringRedisTemplate stringRedisTemplate() {
-        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
-
-        stringRedisTemplate.setConnectionFactory(redisSessionConnectionFactory());
-
-        stringRedisTemplate.setKeySerializer(new StringRedisSerializer());
-        stringRedisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        stringRedisTemplate.setDefaultSerializer(new StringRedisSerializer());
-        stringRedisTemplate.afterPropertiesSet();
-        return stringRedisTemplate;
+    public RedisTemplate<?, ?> redisTemplate() {
+        RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        return redisTemplate;
     }
 }
