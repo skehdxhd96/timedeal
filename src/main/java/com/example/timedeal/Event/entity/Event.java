@@ -31,8 +31,10 @@ public class Event extends baseEntity {
     private String eventType;
 
     @Builder
-    public Event(User createdBy, String eventType) {
+    public Event(Long id, User createdBy, List<PublishEvent> publishEvents, String eventType) {
+        this.id = id;
         this.createdBy = createdBy;
+        this.publishEvents = publishEvents;
         this.eventType = eventType;
     }
 

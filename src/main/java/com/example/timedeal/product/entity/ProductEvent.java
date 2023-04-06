@@ -28,26 +28,26 @@ public class ProductEvent extends baseEntity {
     @JoinColumn(name = "publish_event_id")
     private PublishEvent publishEvent;
 
-    @OneToOne(mappedBy = "productEvent")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private Product product;
 
     public ProductEvent(Product product, PublishEvent publishEvent) {
+        this.id = null;
         this.product = product;
         this.publishEvent = publishEvent;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductEvent that = (ProductEvent) o;
-        return Objects.equals(getId(), that.getId())
-                && Objects.equals(getPublishEvent().getId(), that.getPublishEvent().getId())
-                && Objects.equals(product.getId(), that.getProduct().getId());
+//        return Objects.equals(publishEvent, that.publishEvent) && Objects.equals(product, that.product);
+        return publishEvent.equals(that.publishEvent) && product.equals(that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getPublishEvent(), getProduct());
+        return Objects.hash(publishEvent, product);
     }
 }

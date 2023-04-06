@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "product")
@@ -25,8 +26,7 @@ public class Product extends baseEntity {
     @JoinColumn(name = "administrator_id")
     private User createdBy;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_event_id")
+    @OneToOne(mappedBy = "product")
     private ProductEvent productEvent;
 
     @Enumerated(value = EnumType.STRING)
@@ -97,5 +97,18 @@ public class Product extends baseEntity {
 
     public void terminate() {
         this.productEvent = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(id, product.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

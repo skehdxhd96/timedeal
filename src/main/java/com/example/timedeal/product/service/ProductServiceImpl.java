@@ -7,6 +7,7 @@ import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.dto.*;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.entity.ProductEvent;
+import com.example.timedeal.product.entity.ProductEvents;
 import com.example.timedeal.product.repository.ProductEventRepository;
 import com.example.timedeal.product.repository.ProductRepository;
 import com.example.timedeal.user.entity.User;
@@ -112,9 +113,9 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    public void terminateEvent(Long id, ProductEventRequest request) {
+    public void terminateEvent(Long productId, ProductEventRequest request) {
 
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
         PublishEvent publishEvent = publishEventRepository.findById(request.getPublishEventId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));

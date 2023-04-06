@@ -86,20 +86,20 @@ public class ProductController {
 
     // 상품에 이벤트를 등록한다.
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
-    @PostMapping("/event/{id}")
-    public ResponseEntity<Void> assignEvent(@PathVariable Long id, @Valid @RequestBody ProductEventRequest request) {
+    @PostMapping("/event/{productId}")
+    public ResponseEntity<Void> assignEvent(@PathVariable Long productId, @Valid @RequestBody ProductEventRequest request) {
 
-        productService.assignEvent(id, request);
+        productService.assignEvent(productId, request);
 
         return ResponseEntity.noContent().build();
     }
 
     // 상품의 이벤트를 해지한다.
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
-    @DeleteMapping("/event/{id}")
-    public ResponseEntity<Void> terminateEvent(@PathVariable Long id, @Valid @RequestBody ProductEventRequest request) {
+    @DeleteMapping("/event/{productId}")
+    public ResponseEntity<Void> terminateEvent(@PathVariable Long productId, @Valid @RequestBody ProductEventRequest request) {
 
-        productService.terminateEvent(id, request);
+        productService.terminateEvent(productId, request);
 
         return ResponseEntity.noContent().build();
     }

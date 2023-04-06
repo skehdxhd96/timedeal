@@ -39,7 +39,7 @@ public class ProductEvents {
 
     public void remove(ProductEvent productEvent) {
         if (!contains(productEvent)) {
-            throw new BusinessException(ErrorCode.ALREADY_PUBLISEHD);
+            throw new BusinessException(ErrorCode.NOT_EVENT_PRODUCT);
         }
         productEventList.remove(productEvent);
     }

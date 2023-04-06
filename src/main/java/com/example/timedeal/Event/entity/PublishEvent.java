@@ -15,6 +15,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "publish_event")
@@ -40,15 +41,17 @@ public class PublishEvent extends baseEntity {
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
     private int eventDesc;
-
     @Builder
-    public PublishEvent(String eventName, LocalDateTime eventStartTime, LocalDateTime eventEndTime, int eventDesc) {
+    public PublishEvent(Event event, ProductEvents productEvents, EventStatus eventStatus,
+                        String eventName, LocalDateTime eventStartTime, LocalDateTime eventEndTime, int eventDesc) {
+        this.event = event;
+        this.productEvents = productEvents;
+        this.eventStatus = eventStatus;
         this.eventName = eventName;
         this.eventStartTime = eventStartTime;
         this.eventEndTime = eventEndTime;
         this.eventDesc = eventDesc;
     }
-
     public void setEvent(Event event) {
 
         if(this.event != null) {
@@ -59,13 +62,11 @@ public class PublishEvent extends baseEntity {
     }
 
     public void register(Product product) {
-
         ProductEvent productEvent = new ProductEvent(product, this);
         productEvents.add(productEvent);
     }
 
     public void terminate(Product product) {
-
         ProductEvent productEvent = new ProductEvent(product, this);
         productEvents.remove(productEvent);
     }
@@ -78,5 +79,18 @@ public class PublishEvent extends baseEntity {
             || this.eventEndTime.isBefore(now)) {
             throw new BusinessException(ErrorCode.NOT_IN_PROGRESSING);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PublishEvent that = (PublishEvent) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

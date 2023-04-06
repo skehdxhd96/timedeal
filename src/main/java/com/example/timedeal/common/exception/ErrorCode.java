@@ -16,6 +16,7 @@ public enum ErrorCode {
     EVENT_NOT_MATCHING(500, "해당 이벤트 상품이 존재하지 않습니다.", "EVENT_NOT_MATCHING"),
     PUBLISH_NOT_YET(500, "이벤트 발행이 필요합니다.", "PUBLISH_NOT_YET"),
     NOT_IN_PROGRESSING(500, "이벤트 진행 기간이 아닙니다.", "NOT_IN_PROGRESSING"),
+    NOT_EVENT_PRODUCT(500, "이벤트 상품이 아닙니다.", "NOT_EVENT_PRODUCT"),
     NOT_ENOUGH_STOCK(500, "재고가 부족합니다.", "NOT_ENOUGH_STOCK"),
     ADMINISTRATOR_ONLY(500, "관리자 기능입니다. 관리자에게 문의해주세요", "ADMINISTRATOR_ONLY");
 
