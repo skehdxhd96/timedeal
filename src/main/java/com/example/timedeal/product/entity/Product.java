@@ -104,7 +104,7 @@ public class Product extends baseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id);
+        return id.equals(product.id);
     }
 
     @Override

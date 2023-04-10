@@ -113,11 +113,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-    public void terminateEvent(Long productId, ProductEventRequest request) {
+    public void terminateEvent(Long productId, Long publishEventId) {
 
+        // DeleteMapping -> PostMapping으로 바꾸고 해보자.
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
-        PublishEvent publishEvent = publishEventRepository.findById(request.getPublishEventId())
+        PublishEvent publishEvent = publishEventRepository.findById(publishEventId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));
 
         publishEvent.terminate(product);

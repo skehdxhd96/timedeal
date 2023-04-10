@@ -1,6 +1,7 @@
 package com.example.timedeal.Event.dto;
 
 import com.example.timedeal.Event.entity.Event;
+import com.example.timedeal.Event.entity.EventStatus;
 import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.product.entity.ProductEvents;
 import com.example.timedeal.user.entity.User;
@@ -21,6 +22,7 @@ public class EventAssembler {
     public static PublishEvent publishEvent(PublishEventSaveRequest request) {
         return PublishEvent.builder()
                 .eventName(request.getEventName())
+                .eventStatus(EventStatus.IN_PROGRESS)
                 .productEvents(new ProductEvents())
                 .eventStartTime(request.getEventStartTime())
                 .eventEndTime(request.getEventEndTime())

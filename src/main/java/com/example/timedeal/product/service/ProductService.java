@@ -24,5 +24,5 @@ public interface ProductService {
 
     void assignEvent(Long productId, ProductEventRequest request);
 
-    void terminateEvent(Long productId, ProductEventRequest request);
+    void terminateEvent(Long productId, Long publishEventId);
 }
