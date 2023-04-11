@@ -84,9 +84,9 @@ public class PublishEvent extends baseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof PublishEvent)) return false;
         PublishEvent that = (PublishEvent) o;
-        return id.equals(that.id);
+        return Objects.equals(id, that.getId());
     }
 
     @Override

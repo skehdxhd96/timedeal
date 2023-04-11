@@ -1,5 +1,6 @@
 package com.example.timedeal.product.entity;
 
+import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.common.entity.baseEntity;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
@@ -102,9 +103,9 @@ public class Product extends baseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Product)) return false;
         Product product = (Product) o;
-        return id.equals(product.id);
+        return Objects.equals(id, product.getId());
     }
 
     @Override

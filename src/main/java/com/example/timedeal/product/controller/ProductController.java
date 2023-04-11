@@ -96,7 +96,7 @@ public class ProductController {
 
     // 상품의 이벤트를 해지한다.
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
-    @DeleteMapping("/event/{productId}/{publishEventId}")
+    @PostMapping("/event/{productId}/{publishEventId}")
     public ResponseEntity<Void> terminateEvent(@PathVariable Long productId, @PathVariable Long publishEventId) {
 
         productService.terminateEvent(productId, publishEventId);

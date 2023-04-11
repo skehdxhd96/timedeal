@@ -40,7 +40,7 @@ public class ProductEvent extends baseEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof ProductEvent)) return false;
         ProductEvent that = (ProductEvent) o;
 //        return Objects.equals(publishEvent, that.publishEvent) && Objects.equals(product, that.product);
         return publishEvent.equals(that.publishEvent) && product.equals(that.product);
