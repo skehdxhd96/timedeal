@@ -21,7 +21,7 @@ public class TimedealEvent implements EventType{
     }
     @Override
     public boolean isOnEvent(String eventName) {
-        return EVENTTYPE.equals(eventName);
+        return EVENTTYPE.equalsIgnoreCase(eventName);
     }
 
     @Override

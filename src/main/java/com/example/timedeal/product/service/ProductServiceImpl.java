@@ -84,8 +84,7 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(key = "#eventName+#pageable.pageNumber",
-                value = "eventProduct") // eventProduct : {#eventName+#pageNumber : xxx, #eventName+#pageNumber, yyy}
+    @Cacheable(key = "#eventName+#pageable.pageNumber", cacheManager = "redisCacheManager", value = "eventProduct") // eventProduct : {#eventName+#pageNumber : xxx, #eventName+#pageNumber, yyy}
     public Page<ProductSelectResponse> findAllProductsOnEvent(Pageable pageable, String eventName) {
 
         return productRepository.findAllProductOnEvent(pageable, eventName).map(ProductSelectResponse::of);
@@ -93,7 +92,6 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional
-//    @CacheEvict(value = "eventProduct", )
     public void assignEvent(Long productId, ProductEventRequest request) {
 
         boolean isExists = productEventRepository.

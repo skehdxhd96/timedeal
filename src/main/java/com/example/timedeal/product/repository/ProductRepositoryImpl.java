@@ -1,5 +1,6 @@
 package com.example.timedeal.product.repository;
 
+import com.example.timedeal.common.entity.RestPage;
 import com.example.timedeal.product.dto.ProductSearchRequest;
 import com.example.timedeal.product.entity.Product;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -37,15 +38,14 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
 
         Long count = queryFactory.select(product.count())
                 .from(product)
-                .innerJoin(product.productEvent, productEvent).fetchJoin()
-                .innerJoin(productEvent.publishEvent, publishEvent).fetchJoin()
+                .innerJoin(product.productEvent, productEvent)
+                .innerJoin(productEvent.publishEvent, publishEvent)
                 .where(publishEvent.eventName.eq(eventName)
                                 .and(publishEvent.eventStartTime.before(LocalDateTime.now()))
                                 .and(publishEvent.eventEndTime.after(LocalDateTime.now())))
                 .fetchFirst();
 
-
-        return PageableExecutionUtils.getPage(products, pageable, () -> count);
+        return new RestPage(PageableExecutionUtils.getPage(products, pageable, () -> count));
     }
 
     @Override
