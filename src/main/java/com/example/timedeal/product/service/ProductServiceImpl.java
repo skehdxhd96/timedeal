@@ -29,7 +29,6 @@ public class ProductServiceImpl implements ProductService{
     public Long register(User currentUser, ProductSaveRequest request) {
 
         Product product = ProductAssembler.product(currentUser, request);
-
         Product newProduct = productRepository.save(product);
 
         return newProduct.getId();
@@ -40,7 +39,6 @@ public class ProductServiceImpl implements ProductService{
     public void remove(Long productId) {
 
         Product product = findProductById(productId);
-
         product.validateOnEvent();
 
         productRepository.delete(product);
@@ -51,7 +49,6 @@ public class ProductServiceImpl implements ProductService{
     public ProductSelectResponse update(User currentUser, Long productId, ProductUpdateRequest request) {
 
         Product findProduct = findProductById(productId);
-
         Product newProduct = ProductAssembler.product(currentUser, request, productId);
 
         findProduct.update(newProduct);
@@ -61,17 +58,17 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional(readOnly = true)
-    public Product findDetails(Long id) {
+    public Product findDetails(Long productId) {
 
-        return productRepository.findProductDetailById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+        return findProductDetailById(productId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<ProductSelectResponse> findAllProducts(Pageable pageable, ProductSearchRequest searchRequest) {
 
-        return productRepository.findAllProducts(pageable, searchRequest).map(ProductSelectResponse::of);
+        return productRepository.findAllProducts(pageable, searchRequest)
+                                    .map(ProductSelectResponse::of);
     }
 
     @Override
@@ -81,7 +78,8 @@ public class ProductServiceImpl implements ProductService{
                value = "eventProduct")
     public RestPage<ProductEventSelectResponse> findAllProductsOnEvent(Pageable pageable, String eventCode) {
 
-        return new RestPage<>(productRepository.findAllProductOnEvent(pageable, eventCode).map(ProductEventSelectResponse::of));
+        return new RestPage<>(productRepository.findAllProductOnEvent(pageable, eventCode)
+                                    .map(ProductEventSelectResponse::of));
     }
 
     @Override
@@ -94,9 +92,8 @@ public class ProductServiceImpl implements ProductService{
         boolean isExists = publishEvent.getProductEvents()
                 .contains(new ProductEvent(product, publishEvent));
 
-        if(isExists) {
+        if(isExists)
             throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
-        }
 
         publishEvent.register(product);
     }
@@ -109,6 +106,11 @@ public class ProductServiceImpl implements ProductService{
         PublishEvent publishEvent = findPublishEventById(publishEventId);
 
         publishEvent.terminate(product);
+    }
+
+    private Product findProductDetailById(Long productId) {
+        return productRepository.findProductDetailById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
     private Product findProductById(Long productId) {

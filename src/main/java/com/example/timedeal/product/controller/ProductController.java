@@ -58,9 +58,9 @@ public class ProductController {
         return ResponseEntity.created(URI.create(redirectUrl)).body(productSelectResponse);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductSelectResponse> showDetails(@PathVariable Long id) {
-        Product product = productService.findDetails(id);
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductSelectResponse> showDetails(@PathVariable Long productId) {
+        Product product = productService.findDetails(productId);
 
         return ResponseEntity.ok(ProductSelectResponse.of(product));
     }
