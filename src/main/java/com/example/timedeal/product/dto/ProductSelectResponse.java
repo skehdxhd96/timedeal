@@ -13,25 +13,16 @@ public class ProductSelectResponse {
 
     private Long id;
     private String productName;
-    private int productPrice;
+    private Double productPrice;
     private String description;
-    private String eventName;
-    private LocalDateTime eventStartTime;
-    private LocalDateTime eventEndTime;
-    private int eventDesc;
 
-    private ProductSelectResponse(Product product) {
-
-        PublishEvent publishEvent = product.getProductEvent().getPublishEvent();
+    protected ProductSelectResponse(Product product) {
 
         this.id = product.getId();
         this.productName = product.getProductName();
-//        this.productPrice = product.getProductPrice();
+        this.productPrice = product.getProductPrice();
         this.description = product.getDescription();
-        this.eventName = publishEvent.getEventName();
-        this.eventStartTime = publishEvent.getEventStartTime();
-        this.eventEndTime = publishEvent.getEventEndTime();
-        this.eventDesc = publishEvent.getEventDesc();
+
     }
 
     public static ProductSelectResponse of(Product product) {

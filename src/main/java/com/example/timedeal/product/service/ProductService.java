@@ -1,12 +1,11 @@
 package com.example.timedeal.product.service;
 
+import com.example.timedeal.common.entity.RestPage;
 import com.example.timedeal.product.dto.*;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface ProductService {
 
@@ -20,7 +19,7 @@ public interface ProductService {
 
     Page<ProductSelectResponse> findAllProducts(Pageable pageable, ProductSearchRequest searchRequest);
 
-    Page<ProductSelectResponse> findAllProductsOnEvent(Pageable pageable, String eventName);
+    RestPage<ProductEventSelectResponse> findAllProductsOnEvent(Pageable pageable, String eventName);
 
     void assignEvent(Long productId, ProductEventRequest request);
 

@@ -41,9 +41,12 @@ public class PublishEvent extends baseEntity {
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
     private int eventDesc;
+    private String eventCode;
+
     @Builder
-    public PublishEvent(Event event, ProductEvents productEvents, EventStatus eventStatus,
-                        String eventName, LocalDateTime eventStartTime, LocalDateTime eventEndTime, int eventDesc) {
+    public PublishEvent(Long id, Event event, ProductEvents productEvents, EventStatus eventStatus, String eventName,
+                        LocalDateTime eventStartTime, LocalDateTime eventEndTime, int eventDesc, String eventCode) {
+        this.id = id;
         this.event = event;
         this.productEvents = productEvents;
         this.eventStatus = eventStatus;
@@ -51,6 +54,7 @@ public class PublishEvent extends baseEntity {
         this.eventStartTime = eventStartTime;
         this.eventEndTime = eventEndTime;
         this.eventDesc = eventDesc;
+        this.eventCode = eventCode;
     }
     public void setEvent(Event event) {
 

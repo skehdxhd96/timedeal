@@ -1,15 +1,10 @@
 package com.example.timedeal.stock.service;
 
-import com.example.timedeal.product.dto.ProductSelectResponse;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.service.ProductService;
 import com.example.timedeal.stock.repository.StockHistoryRepository;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

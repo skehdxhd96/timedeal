@@ -2,7 +2,6 @@ package com.example.timedeal.product.controller;
 
 import com.example.timedeal.common.annotation.CurrentUser;
 import com.example.timedeal.common.annotation.LoginCheck;
-import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.dto.*;
@@ -66,20 +65,19 @@ public class ProductController {
         return ResponseEntity.ok(ProductSelectResponse.of(product));
     }
 
-    // 요청방식 : ?page=pageNo
     @GetMapping
-    public ResponseEntity<Page<ProductSelectResponse>> getAllProducts(
+    public ResponseEntity<Page<? extends ProductSelectResponse>> getAllProducts(
             @ModelAttribute ProductSearchRequest request,
-            @RequestParam(required = false, defaultValue = "all") String eventName,
+            @RequestParam(required = false, defaultValue = "ALL") String eventCode,
             @PageableDefault Pageable pageable
-        ) {
+    ) {
 
         EventType eventType = eventTypes.stream()
-                .filter(type -> type.isOnEvent(eventName))
+                .filter(type -> type.isOnEvent(eventCode))
                 .findAny()
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_MATCHING));
 
-        Page<ProductSelectResponse> productList = eventType.find(pageable, eventName, request);
+        Page<? extends ProductSelectResponse> productList = eventType.find(pageable, eventCode, request);
 
         return ResponseEntity.ok(productList);
     }

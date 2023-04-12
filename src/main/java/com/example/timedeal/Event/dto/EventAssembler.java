@@ -19,8 +19,9 @@ public class EventAssembler {
                 .build();
     }
 
-    public static PublishEvent publishEvent(PublishEventSaveRequest request) {
+    public static PublishEvent publishEvent(Event event, PublishEventSaveRequest request) {
         return PublishEvent.builder()
+                .eventCode(generateEventCode(event, request)) // 202303TIMEDEAL
                 .eventName(request.getEventName())
                 .eventStatus(EventStatus.IN_PROGRESS)
                 .productEvents(new ProductEvents())
@@ -28,5 +29,12 @@ public class EventAssembler {
                 .eventEndTime(request.getEventEndTime())
                 .eventDesc(request.getEventDesc())
                 .build();
+    }
+
+    public static String generateEventCode(Event event, PublishEventSaveRequest request) {
+        // year + month + eventName
+        return String.format("%d-%d-s",request.getEventStartTime().getYear(),
+                                        request.getEventStartTime().getMonth().getValue(),
+                                        event.getEventType().toUpperCase());
     }
 }

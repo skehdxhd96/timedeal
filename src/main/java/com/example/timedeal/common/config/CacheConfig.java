@@ -1,6 +1,10 @@
 package com.example.timedeal.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +40,7 @@ public class CacheConfig {
                 )
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                                new GenericJackson2JsonRedisSerializer()
+                                new GenericJackson2JsonRedisSerializer(objectMapper())
                         )
                 )
                 .entryTtl(Duration.ofHours(3));
@@ -45,5 +49,17 @@ public class CacheConfig {
                 .fromConnectionFactory(redisConnectionFactory)
                 .cacheDefaults(redisCachingConfiguration)
                 .build();
+    }
+
+    private ObjectMapper objectMapper() {
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator
+                .builder()
+                .allowIfSubType(Object.class)
+                .build();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.registerModule(new JavaTimeModule());
+        mapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
+        return mapper;
     }
 }

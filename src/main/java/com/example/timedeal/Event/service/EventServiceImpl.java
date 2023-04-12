@@ -46,7 +46,7 @@ public class EventServiceImpl implements EventService{
         Event event = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.EVENT_NOT_FOUND));
 
-        PublishEvent publishEvent = EventAssembler.publishEvent(request);
+        PublishEvent publishEvent = EventAssembler.publishEvent(event, request);
 
         event.publish(publishEvent);
     }

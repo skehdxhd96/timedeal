@@ -90,7 +90,8 @@ public class TimedealApplication {
                 .productEvents(new ProductEvents())
                 .eventStartTime(LocalDateTime.of(2023, 4,1,0, 0))
                 .eventEndTime(LocalDateTime.of(2023, 5, 1, 0, 0))
-                .eventName("2023년 3월 타임딜")
+                .eventName("2023년 4월 타임딜")
+                .eventCode(String.format("%d-%d-%s",2023, 4, event.getEventType().toUpperCase()))
                 .build();
 
         event.getPublishEvents().add(publishEvent);

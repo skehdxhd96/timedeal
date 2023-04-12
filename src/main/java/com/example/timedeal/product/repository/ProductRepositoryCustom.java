@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ProductRepositoryCustom {
 
-    Page<Product> findAllProductOnEvent(Pageable pageable, String eventName);
+    Page<Product> findAllProductOnEvent(Pageable pageable, String eventCode);
 
     Page<Product> findAllProducts(Pageable pageable, ProductSearchRequest productSearchRequest);
 }

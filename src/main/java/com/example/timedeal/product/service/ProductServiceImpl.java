@@ -2,25 +2,20 @@ package com.example.timedeal.product.service;
 
 import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.Event.repository.PublishEventRepository;
+import com.example.timedeal.common.entity.RestPage;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.dto.*;
 import com.example.timedeal.product.entity.Product;
-import com.example.timedeal.product.entity.ProductEvent;
-import com.example.timedeal.product.entity.ProductEvents;
 import com.example.timedeal.product.repository.ProductEventRepository;
 import com.example.timedeal.product.repository.ProductRepository;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -84,10 +79,12 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(key = "#eventName+#pageable.pageNumber", cacheManager = "redisCacheManager", value = "eventProduct") // eventProduct : {#eventName+#pageNumber : xxx, #eventName+#pageNumber, yyy}
-    public Page<ProductSelectResponse> findAllProductsOnEvent(Pageable pageable, String eventName) {
+    @Cacheable(key = "#eventCode+':'+#pageable.pageNumber",
+               cacheManager = "redisCacheManager",
+               value = "eventProduct")
+    public RestPage<ProductEventSelectResponse> findAllProductsOnEvent(Pageable pageable, String eventCode) {
 
-        return productRepository.findAllProductOnEvent(pageable, eventName).map(ProductSelectResponse::of);
+        return new RestPage<>(productRepository.findAllProductOnEvent(pageable, eventCode).map(ProductEventSelectResponse::of));
     }
 
     @Override

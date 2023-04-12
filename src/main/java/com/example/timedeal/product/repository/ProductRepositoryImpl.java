@@ -1,5 +1,6 @@
 package com.example.timedeal.product.repository;
 
+import com.example.timedeal.Event.entity.EventStatus;
 import com.example.timedeal.common.entity.RestPage;
 import com.example.timedeal.product.dto.ProductSearchRequest;
 import com.example.timedeal.product.entity.Product;
@@ -24,14 +25,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Product> findAllProductOnEvent(Pageable pageable, String eventName) {
+    public Page<Product> findAllProductOnEvent(Pageable pageable, String eventCode) {
 
         List<Product> products = queryFactory.selectFrom(product)
                 .innerJoin(product.productEvent, productEvent).fetchJoin()
                 .innerJoin(productEvent.publishEvent, publishEvent).fetchJoin()
-                .where(publishEvent.eventName.eq(eventName)
+                .where(publishEvent.eventCode.eq(eventCode)
+                        .and(publishEvent.eventStatus.eq(EventStatus.IN_PROGRESS)
                         .and(publishEvent.eventStartTime.before(LocalDateTime.now()))
-                        .and(publishEvent.eventEndTime.after(LocalDateTime.now())))
+                        .and(publishEvent.eventEndTime.after(LocalDateTime.now()))))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .fetch();
@@ -40,17 +42,19 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
                 .from(product)
                 .innerJoin(product.productEvent, productEvent)
                 .innerJoin(productEvent.publishEvent, publishEvent)
-                .where(publishEvent.eventName.eq(eventName)
+                .where(publishEvent.eventCode.eq(eventCode)
                                 .and(publishEvent.eventStartTime.before(LocalDateTime.now()))
                                 .and(publishEvent.eventEndTime.after(LocalDateTime.now())))
                 .fetchFirst();
 
-        return new RestPage(PageableExecutionUtils.getPage(products, pageable, () -> count));
+        return PageableExecutionUtils.getPage(products, pageable, () -> count);
     }
 
     @Override
     public Page<Product> findAllProducts(Pageable pageable, ProductSearchRequest productSearchRequest) {
         List<Product> products = queryFactory.selectFrom(product)
+                .leftJoin(product.productEvent, productEvent).fetchJoin()
+                .leftJoin(productEvent.publishEvent, publishEvent).fetchJoin()
                 .where(eqProductName(productSearchRequest.getSearchKeyword()),
                         (notMoreThanPrice(productSearchRequest.getSearchPrice())))
                 .offset(pageable.getOffset())
