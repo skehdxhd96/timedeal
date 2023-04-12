@@ -64,42 +64,6 @@ public class Product extends baseEntity {
         // 재고 수량 업데이트 쳐도 되나 ..?
     }
 
-    public void validatedOnEvent() {
-
-        if(this.productEvent != null) {
-            throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
-        }
-    }
-
-    public void validateOnOrder() {
-
-        if(this.productEvent == null) validatedGeneralProduct();
-        else validatedEventProduct();
-    }
-
-    public void validatedEventProduct() {
-
-        this.productEvent.getPublishEvent().isInProgress();
-    }
-
-    public void validatedGeneralProduct() {
-
-    }
-
-    public void checkSoldOut(int currentUsedQuantity) {
-        if(totalStockQuantity < currentUsedQuantity) {
-            throw new BusinessException(ErrorCode.NOT_ENOUGH_STOCK);
-        }
-    }
-
-    public void assignEvent(ProductEvent productEvent) {
-        this.productEvent = productEvent;
-    }
-
-    public void terminate() {
-        this.productEvent = null;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -7,7 +7,7 @@ import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.dto.*;
 import com.example.timedeal.product.entity.Product;
-import com.example.timedeal.product.repository.ProductEventRepository;
+import com.example.timedeal.product.entity.ProductEvent;
 import com.example.timedeal.product.repository.ProductRepository;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
-    private final ProductEventRepository productEventRepository;
     private final PublishEventRepository publishEventRepository;
 
     @Override
@@ -91,17 +90,17 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public void assignEvent(Long productId, ProductEventRequest request) {
 
-        boolean isExists = productEventRepository.
-                existsByProductIdAndPublishEventId(productId, request.getPublishEventId());
-
-        if(isExists) {
-            throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
-        }
-
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
         PublishEvent publishEvent = publishEventRepository.findById(request.getPublishEventId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));
+
+        boolean isExists = publishEvent.getProductEvents()
+                .contains(new ProductEvent(product, publishEvent));
+
+        if(isExists) {
+            throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
+        }
 
         publishEvent.register(product);
     }
@@ -110,7 +109,6 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public void terminateEvent(Long productId, Long publishEventId) {
 
-        // DeleteMapping -> PostMapping으로 바꾸고 해보자.
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
         PublishEvent publishEvent = publishEventRepository.findById(publishEventId)
