@@ -39,8 +39,7 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public void remove(Long productId) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product product = findProductById(productId);
 
         product.validateOnEvent();
 
@@ -51,8 +50,7 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public ProductSelectResponse update(User currentUser, Long productId, ProductUpdateRequest request) {
 
-        Product findProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+        Product findProduct = findProductById(productId);
 
         Product newProduct = ProductAssembler.product(currentUser, request, productId);
 
@@ -90,10 +88,8 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public void assignEvent(Long productId, ProductEventRequest request) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
-        PublishEvent publishEvent = publishEventRepository.findById(request.getPublishEventId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));
+        Product product = findProductById(productId);
+        PublishEvent publishEvent = findPublishEventById(request.getPublishEventId());
 
         boolean isExists = publishEvent.getProductEvents()
                 .contains(new ProductEvent(product, publishEvent));
@@ -109,11 +105,19 @@ public class ProductServiceImpl implements ProductService{
     @Transactional
     public void terminateEvent(Long productId, Long publishEventId) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
-        PublishEvent publishEvent = publishEventRepository.findById(publishEventId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));
+        Product product = findProductById(productId);
+        PublishEvent publishEvent = findPublishEventById(publishEventId);
 
         publishEvent.terminate(product);
+    }
+
+    private Product findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+    }
+
+    private PublishEvent findPublishEventById(Long publishEventId) {
+        return publishEventRepository.findById(publishEventId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PUBLISH_NOT_YET));
     }
 }
