@@ -7,5 +7,4 @@ EXPOSE 8080
 ENTRYPOINT ["nohup", "java", "-jar", \
 "-Djava.security.egd=file:/dev/./urandom",\
 "-javaagent:pinpoint-agent/pinpoint-agent-2.4.1/pinpoint-bootstrap-2.4.1.jar",\
-"-Dpinpoint.agentId=timedeal01","-Dpinpoint.applicationName=timedeal",\
-"-Dpinpoint.config=pinpoint-agent/pinpoint-agent-2.4.1/pinpoint-root.config","/app.jar"]
+"-Dpinpoint.agentId=timedeal01","-Dpinpoint.applicationName=timedeal","/app.jar"]
