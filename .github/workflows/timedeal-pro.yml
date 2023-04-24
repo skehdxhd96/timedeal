@@ -67,4 +67,4 @@ jobs:
           script: |
             sudo docker rm -f ${{ secrets.CONTAINER }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
-            sudo docker run -d -t --name ${{ secrets.CONTAINER }} -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
+            sudo docker run -d -t --name ${{ secrets.CONTAINER }} -p 8080:8080 -v /home/dongmin.na/pinpoint-agent-2.2.2:/pinpoint ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
