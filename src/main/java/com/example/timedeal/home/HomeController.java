@@ -8,6 +8,7 @@ import com.example.timedeal.user.entity.Consumer;
 import com.example.timedeal.user.repository.UserRepository;
 import com.example.timedeal.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,38 +16,25 @@ import javax.annotation.PostConstruct;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class HomeController {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-
-/*    @PostConstruct
-    public void initData() {
-
-        // user
-        for(long i=1; i<=3; i++) {
-            userRepository.save(Consumer.builder()
-                    .id(i)
-                    .userName("test" + i)
-                    .password("1234")
-                    .address("korea")
-                    .build());
-        }
-
-        // product
-        for(long i=1; i<25; i++) {
-            productRepository.save(Product.builder()
-                    .id(i)
-                    .productName("product" + i)
-                    .productPrice(1000 * i)
-                    .description("desc")
-                    .)
-        }
-    }*/
-
     @GetMapping("/home")
     public String homeController() {
-
         return "Hello, This is Branch 2";
+    }
+
+    @GetMapping("/cpu")
+    public String cpu() {
+        log.info("cpu");
+        long value = 0;
+
+        for(long i = 0; i < 100000000L; i++) {
+            value++;
+        }
+
+        return "ok";
     }
 }
