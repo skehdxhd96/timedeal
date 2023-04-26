@@ -1,12 +1,8 @@
 package com.example.timedeal.user;
 
-import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.common.factory.UserFactory;
-import com.example.timedeal.user.dto.UserLoginRequest;
 import com.example.timedeal.user.dto.UserSaveRequest;
 import com.example.timedeal.user.dto.UserSaveResponse;
-import com.example.timedeal.user.entity.Consumer;
-import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.service.LoginService;
 import com.example.timedeal.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,13 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -43,8 +37,8 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc // -> webAppContextSetup(webApplicationContext)
-@AutoConfigureRestDocs // -> apply(documentationConfiguration(restDocumentation))
+@AutoConfigureMockMvc
+@AutoConfigureRestDocs
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class UserControllerTest {
@@ -120,44 +114,6 @@ public class UserControllerTest {
                 )
         ));
     }
-
-//    @Test
-//    @DisplayName("회원 로그인 테스트 - 성공")
-//    void login_member_test() throws Exception {
-//
-//        UserLoginRequest userLoginRequest = UserFactory.userLoginRequest();
-//        User loginUser = Consumer.builder()
-//                .userName("test")
-//                .password("1234")
-//                .build();
-//
-//        //given
-//
-//        //when
-//        ResultActions perform = mvc.perform(post("/api/v1/user/login")
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .content(objectMapper.writeValueAsString(userLoginRequest)));
-//
-//        //then
-//        verify(loginService, times(1)).logIn(userLoginRequest);
-//    }
-
-//    @Test
-//    @DisplayName("회원 삭제 테스트")
-//    void delete_member_test() throws Exception {
-//
-//        User loginUser = Consumer.builder()
-//                .userName("test")
-//                .password("1234")
-//                .build();
-//
-//        AuthUser sessionUser = AuthUser.of(loginUser);
-//
-//        httpSession.setAttribute(USER_SESSION_KEY ,sessionUser);
-//
-//        mvc.perform(delete("/api/v1/user")
-//                )
-//    }
 
     @Test
     @DisplayName("마이페이지 조회 테스트")
