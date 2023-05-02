@@ -18,7 +18,9 @@ public enum ErrorCode {
     NOT_IN_PROGRESSING(500, "이벤트 진행 기간이 아닙니다.", "NOT_IN_PROGRESSING"),
     NOT_EVENT_PRODUCT(500, "이벤트 상품이 아닙니다.", "NOT_EVENT_PRODUCT"),
     NOT_ENOUGH_STOCK(500, "재고가 부족합니다.", "NOT_ENOUGH_STOCK"),
-    ADMINISTRATOR_ONLY(500, "관리자 기능입니다. 관리자에게 문의해주세요", "ADMINISTRATOR_ONLY");
+    ADMINISTRATOR_ONLY(500, "관리자 기능입니다. 관리자에게 문의해주세요", "ADMINISTRATOR_ONLY"),
+    ALREADY_IN_ORDER(500, "이미 주문목록에 있습니다.", "ALREADY_IN_ORDER"),
+    NOT_IN_ORDER(500, "주문목록에 존재하지 않는 상품입니다.", "NOT_IN_ORDER");
 
     private final int code;
     private final String message;
