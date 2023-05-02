@@ -12,7 +12,7 @@ public class AuthUser {
     private String username;
     private String usertype;
 
-    private AuthUser(Long id, String username, String usertype) {
+    public AuthUser(Long id, String username, String usertype) {
         this.id = id;
         this.username = username;
         this.usertype = usertype;

@@ -8,6 +8,7 @@ import com.example.timedeal.user.entity.User;
 public interface UserService {
 
     UserSaveResponse joinMember(UserSaveRequest request);
-    void deleteMember(User user);
+    void deleteMember(Long userId);
     UserSelectResponse findMember(User user);
+    User findUser(Long userId);
 }

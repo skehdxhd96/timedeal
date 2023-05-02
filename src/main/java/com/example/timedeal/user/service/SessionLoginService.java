@@ -4,6 +4,7 @@ import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.user.dto.UserLoginRequest;
+import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,14 @@ public class SessionLoginService implements LoginService {
     private final HttpSession httpSession;
 
     @Override
-    public void logIn(UserLoginRequest request) {
+    public UserSelectResponse logIn(UserLoginRequest request) {
 
         User user = userRepository.findByUserNameAndPassword(request.getUsername(), request.getPassword())
                 .orElseThrow(() -> new BusinessException(ErrorCode.LOG_IN_FAILURE));
 
         httpSession.setAttribute(USER_SESSION_KEY, AuthUser.of(user));
+
+        return UserSelectResponse.of(getCurrentUser());
     }
 
     @Override

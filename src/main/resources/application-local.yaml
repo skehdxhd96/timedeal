@@ -3,7 +3,7 @@ spring:
     activate:
       on-profile: local
   datasource:
-    url: jdbc:h2:tcp://localhost/~/timedeallocal;Mode=Oracle
+    url: jdbc:h2:tcp://localhost/~/timedeallocal
     username: sa
     password: 1234
     driver-class-name: org.h2.Driver
@@ -21,8 +21,6 @@ spring:
       hibernate.show_sql: true
       hibernate.use_sql_comments: true
       hibernate.default_batch_fetch_size: 150
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
 
 server:
   servlet:

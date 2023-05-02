@@ -1,11 +1,18 @@
 package com.example.timedeal.user;
 
+import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.common.factory.UserFactory;
+import com.example.timedeal.user.dto.UserLoginRequest;
 import com.example.timedeal.user.dto.UserSaveRequest;
 import com.example.timedeal.user.dto.UserSaveResponse;
+import com.example.timedeal.user.dto.UserSelectResponse;
+import com.example.timedeal.user.entity.Consumer;
+import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.service.LoginService;
 import com.example.timedeal.user.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,14 +33,14 @@ import static com.example.timedeal.ApiDocumentUtils.getDocumentRequest;
 import static com.example.timedeal.ApiDocumentUtils.getDocumentResponse;
 import static com.example.timedeal.user.service.SessionLoginService.USER_SESSION_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.LONG;
-import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
+import static org.assertj.core.api.InstanceOfAssertFactories.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,8 +48,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@Slf4j
 public class UserControllerTest {
 
+    public static final String USER_SESSION_KEY = "USER_ID";
     @Autowired
     private MockMvc mvc;
 
@@ -57,12 +66,6 @@ public class UserControllerTest {
 
     @MockBean
     private MockHttpSession httpSession;
-
-    @Test
-    public void test() {
-        System.out.println("test");
-    }
-
     @AfterEach
     void clearSession() {
         httpSession.clearAttributes();
@@ -116,14 +119,174 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName("마이페이지 조회 테스트")
-    void find_member_test() {
+    @DisplayName("회원 탈퇴 테스트")
+    void delete_member_test() throws Exception {
 
+        UserLoginRequest userLoginRequest = UserFactory.userLoginRequest();
+        Consumer consumer = UserFactory.consumer();
+
+        // given
+        given(userService.findUser(any(Long.class)))
+                .willReturn(consumer);
+        given(loginService.getCurrentUser())
+                .willReturn(AuthUser.of(consumer));
+        willDoNothing()
+                .given(loginService)
+                .logIn(userLoginRequest);
+
+        // when
+        ResultActions perform = mvc.perform(delete("/api/v1/user")
+                .content(objectMapper.writeValueAsString(consumer))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL));
+
+        // then
+        perform.andExpect(status().isNoContent());
+        verify(loginService, times(1))
+                .logOut();
+        verify(userService, times(1))
+                .deleteMember(any());
+
+        // restdocs
+        perform.andDo(document("delete-member",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
+                ),
+                requestFields(
+                        fieldWithPath("id").type(STRING).description("Current Login User Id - Don't Have to Send"),
+                        fieldWithPath("userName").type(STRING).description("Current Login User Name - Don't Have to Send"),
+                        fieldWithPath("password").type(STRING).description("Current Login User PW - Don't Have to Send"),
+                        fieldWithPath("userType").type(STRING).description("Current Login User Type - Don't Have to Send"),
+                        fieldWithPath("address").type(STRING).description("Current Login User Address - Don't Have to Send"),
+                        fieldWithPath("orders").type(STRING).description("Current Login User Orders - Don't Have to Send").ignored(),
+                        fieldWithPath("createDate").type(LOCAL_DATE_TIME).description("Current Login User CreateDate - Don't Have to Send"),
+                        fieldWithPath("updateDate").type(LOCAL_DATE_TIME).description("Current Login User UpdateDate - Don't Have to Send")
+                )));
+    }
+
+    @Test
+    @DisplayName("마이페이지 조회 테스트")
+    void find_member_test() throws Exception {
+
+        UserSelectResponse userSelectResponse = UserFactory.userSelectResponse();
+        Consumer consumer = UserFactory.consumer();
+
+        // given
+        given(userService.findUser(any(Long.class)))
+                .willReturn(consumer);
+        given(loginService.getCurrentUser())
+                .willReturn(AuthUser.of(consumer));
+        given(userService.findMember(consumer))
+                .willReturn(userSelectResponse);
+
+        //when
+        ResultActions perform = mvc.perform(get("/api/v1/user/myPage")
+                .content(objectMapper.writeValueAsString(consumer))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL));
+
+        //then
+        String returnBody = perform.andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertThat(returnBody)
+                .isEqualTo(objectMapper.writeValueAsString(userSelectResponse));
+        verify(userService, times(1))
+                .findMember(consumer);
+
+        // restdocs
+        perform.andDo(document("get-myPage",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
+                ),
+                requestFields(
+                        fieldWithPath("id").type(NUMBER).description("Current Login User Id - Don't Have to Send"),
+                        fieldWithPath("userName").type(STRING).description("Current Login User Name - Don't Have to Send"),
+                        fieldWithPath("password").type(STRING).description("Current Login User PW - Don't Have to Send"),
+                        fieldWithPath("userType").type(STRING).description("Current Login User Type - Don't Have to Send"),
+                        fieldWithPath("address").type(STRING).description("Current Login User Address - Don't Have to Send"),
+                        fieldWithPath("orders").description("Current Login User Orders - Don't Have to Send").ignored(),
+                        fieldWithPath("createDate").type(LOCAL_DATE_TIME).description("Current Login User CreateDate - Don't Have to Send"),
+                        fieldWithPath("updateDate").type(LOCAL_DATE_TIME).description("Current Login User UpdateDate - Don't Have to Send")
+                ),
+                responseFields(
+                        fieldWithPath("userId").type(NUMBER).description("Current Login User Id"),
+                        fieldWithPath("userName").type(STRING).description("Current Login User Name"),
+                        fieldWithPath("userType").type(STRING).description("Current Login User PW")
+                )));
+    }
+
+    @Test
+    @DisplayName("회원 로그인 테스트")
+    void login_member_test() throws Exception {
+
+        Consumer consumer = UserFactory.consumer();
+        UserLoginRequest userLoginRequest = UserFactory.userLoginRequest();
+        UserSelectResponse userSelectResponse = UserSelectResponse.of(AuthUser.of(consumer));
+
+        // given
+        given(loginService.logIn(any(UserLoginRequest.class)))
+                .willReturn(userSelectResponse);
+
+        // when
+        ResultActions perform = mvc.perform(post("/api/v1/user/login")
+                .content(objectMapper.writeValueAsString(userLoginRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.ALL));
+
+        // then
+        String returnBody = perform.andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        verify(loginService, times(1))
+                .logIn(any(UserLoginRequest.class));
+
+        assertThat(returnBody).isEqualTo(objectMapper.writeValueAsString(userSelectResponse));
+
+        // restdocs
+        perform.andDo(document("user-login",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
+                ),
+                requestFields(
+                        fieldWithPath("username").type(STRING).description("UserName"),
+                        fieldWithPath("password").type(STRING).description("Password")
+                )));
     }
 
     @Test
     @DisplayName("회원 로그아웃 테스트")
-    void logout_member_test() {
+    void logout_member_test() throws Exception {
 
+        Consumer consumer = UserFactory.consumer();
+
+        // given
+        given(loginService.getCurrentUser())
+                .willReturn(AuthUser.of(consumer));
+
+        // when
+        ResultActions perform = mvc.perform(post("/api/v1/user/logout")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .accept(MediaType.ALL));
+
+        // then
+        perform.andExpect(status().isNoContent());
+        verify(loginService, times(1))
+                .logOut();
+
+        // restdocs
+        perform.andDo(document("user-logout",
+                getDocumentRequest(),
+                getDocumentResponse()));
     }
 }

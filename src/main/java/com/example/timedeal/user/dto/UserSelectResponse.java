@@ -1,5 +1,6 @@
 package com.example.timedeal.user.dto;
 
+import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,5 +21,9 @@ public class UserSelectResponse {
 
     public static UserSelectResponse of(User user) {
         return new UserSelectResponse(user.getId(), user.getUserName(), user.getUserType().name());
+    }
+
+    public static UserSelectResponse of(AuthUser user) {
+        return new UserSelectResponse(user.getId(), user.getUsername(), user.getUsertype());
     }
 }

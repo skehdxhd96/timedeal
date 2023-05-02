@@ -7,6 +7,7 @@ import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.repository.UserRepository;
 import com.example.timedeal.user.service.LoginService;
+import com.example.timedeal.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class CurrentUserResolver implements HandlerMethodArgumentResolver {
 
     private final LoginService loginService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -36,9 +37,6 @@ public class CurrentUserResolver implements HandlerMethodArgumentResolver {
             throw new BusinessException(ErrorCode.LOG_IN_ESSENTIAL);
         }
 
-        User findUser = userRepository.findById(currentUser.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        return findUser;
+        return userService.findUser(currentUser.getId());
     }
 }

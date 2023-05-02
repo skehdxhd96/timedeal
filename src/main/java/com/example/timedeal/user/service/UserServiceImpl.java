@@ -39,12 +39,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteMember(User user) {
+    public void deleteMember(Long userId) {
 
         // TODO : 구매에 성공해서 배달중인 데이터가 있다면 Exception
         // TODO : Select시 User로 검색하면 findById 2번나감
 
-        userRepository.delete(user);
+        userRepository.deleteById(userId);
     }
 
     @Transactional(readOnly = true)
@@ -62,5 +62,11 @@ public class UserServiceImpl implements UserService {
         if(userRepository.existsByUserName(username)) {
             throw new BusinessException(ErrorCode.DUPLICATED_USERNAME);
         }
+    }
+
+    @Override
+    public User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

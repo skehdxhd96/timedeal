@@ -1,0 +1,84 @@
+= User API List
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[resources-get]]
+== GET
+
+[[resources-get-myPage]]
+=== 마이페이지 조회
+
+==== HTTP request fields
+
+include::{snippets}/get-myPage/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/get-myPage/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/get-myPage/http-response.adoc[]
+
+[[resources-post]]
+== Post
+
+[[resources-post-joinMember]]
+=== 회원 가입
+
+==== HTTP request fields
+
+include::{snippets}/join-member/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/join-member/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/join-member/http-response.adoc[]
+
+[[resources-post-login]]
+=== 로그인
+
+==== HTTP request fields
+
+include::{snippets}/user-login/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/user-login/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/user-login/http-response.adoc[]
+
+[[resources-post-logout]]
+=== 로그아웃
+
+==== HTTP request Body
+
+include::{snippets}/user-logout/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/user-logout/http-response.adoc[]
+
+[[resources-delete]]
+== Delete
+
+[[resources-delete-deleteMember]]
+=== 회원 탈퇴
+
+==== HTTP request fields
+
+include::{snippets}/delete-member/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/delete-member/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/delete-member/http-response.adoc[]

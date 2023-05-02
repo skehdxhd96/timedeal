@@ -35,7 +35,7 @@ public class UserController {
     public ResponseEntity<Void> deleteMember(@CurrentUser User currentUser) {
 
         loginService.logOut();
-        userService.deleteMember(currentUser);
+        userService.deleteMember(currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 
@@ -48,9 +48,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> logIn(@Valid @RequestBody UserLoginRequest request) {
-        loginService.logIn(request);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<UserSelectResponse> logIn(@Valid @RequestBody UserLoginRequest request) {
+        UserSelectResponse loginUser = loginService.logIn(request);
+        return ResponseEntity.ok(loginUser);
     }
 
     @LoginCheck
