@@ -5,11 +5,18 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@NoArgsConstructor
 public class OrderSaveRequest {
 
+    // 불변성
+
     @NotNull
-    private Long productId;
+    private List<OrderItemSaveRequest> orderItemRequests;
+
+    public OrderSaveRequest() {
+        this.orders = new ArrayList<>();
+    }
 }

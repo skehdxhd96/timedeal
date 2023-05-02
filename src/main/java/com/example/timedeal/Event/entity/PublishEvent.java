@@ -75,14 +75,16 @@ public class PublishEvent extends baseEntity {
         productEvents.remove(productEvent);
     }
 
-    public void isInProgress() {
+    public boolean isInProgress() {
 
         LocalDateTime now = LocalDateTime.now();
 
         if(this.eventStartTime.isAfter(now)
             || this.eventEndTime.isBefore(now)) {
-            throw new BusinessException(ErrorCode.NOT_IN_PROGRESSING);
+            return false;
         }
+
+        return true;
     }
 
     @Override

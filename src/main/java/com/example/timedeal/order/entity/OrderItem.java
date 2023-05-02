@@ -34,15 +34,17 @@ public class OrderItem extends baseEntity {
     private Long publishEventId;
 
     private int itemRealPrice;
+    private int quantity;
 
     @Builder
-    public OrderItem(Long id, Order order, Product product, double itemPrice, Long publishEventId, int itemRealPrice) {
+    public OrderItem(Long id, Order order, Product product, double itemPrice, Long publishEventId, int itemRealPrice, int quantity) {
         this.id = id;
         this.order = order;
         this.product = product;
         this.itemPrice = itemPrice;
         this.publishEventId = publishEventId;
         this.itemRealPrice = itemRealPrice;
+        this.quantity = quantity;
     }
 
     @Override

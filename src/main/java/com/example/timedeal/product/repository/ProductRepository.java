@@ -17,4 +17,10 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
             "left join fetch pde.publishEvent ppe " +
             "where p.id = :id")
     Optional<Product> findProductDetailById(Long id);
+
+    @Query("select p from Product p " +
+            "left join fetch p.productEvent pde " +
+            "left join fetch pde.publishEvent ppe " +
+            "where p.id in :productIds")
+    List<Product> findProductDetailByProductIds(List<Long> productIds);
 }

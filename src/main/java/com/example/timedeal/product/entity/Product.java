@@ -48,6 +48,11 @@ public class Product extends baseEntity {
         this.totalStockQuantity = totalStockQuantity;
     }
 
+    public boolean validatedInEvent() {
+        return this.productEvent != null
+                && this.productEvent.getPublishEvent().isInProgress();
+    }
+
     public void validateOnEvent() {
         if(this.productEvent != null) {
             throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
