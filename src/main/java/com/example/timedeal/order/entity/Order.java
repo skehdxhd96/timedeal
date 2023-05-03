@@ -62,8 +62,8 @@ public class Order extends baseEntity {
                 .itemPrice(product.getProductPrice())
                 .order(this)
                 .product(product)
-                .itemRealPrice()
-                .publishEventId()
+//                .itemRealPrice()
+//                .publishEventId()
                 .build();
 
         orderItems.add(orderItem);
@@ -74,8 +74,8 @@ public class Order extends baseEntity {
                 .itemPrice(product.getProductPrice())
                 .order(this)
                 .product(product)
-                .itemRealPrice()
-                .publishEventId()
+//                .itemRealPrice()
+//                .publishEventId()
                 .build();
 
         orderItems.remove(orderItem);

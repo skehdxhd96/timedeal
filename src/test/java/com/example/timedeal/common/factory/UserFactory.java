@@ -6,6 +6,7 @@ import com.example.timedeal.user.dto.UserLoginRequest;
 import com.example.timedeal.user.dto.UserSaveRequest;
 import com.example.timedeal.user.dto.UserSaveResponse;
 import com.example.timedeal.user.dto.UserSelectResponse;
+import com.example.timedeal.user.entity.Administrator;
 import com.example.timedeal.user.entity.Consumer;
 import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.entity.UserType;
@@ -35,6 +36,15 @@ public class UserFactory {
                 .address("korea")
                 .userType(UserType.CONSUMER)
                 .id(1L)
+                .build();
+    }
+
+    public static Administrator administrator() {
+        return Administrator.builder()
+                .id(2L)
+                .userName("admin")
+                .password("admin")
+                .userType(UserType.ADMINISTRATOR)
                 .build();
     }
 

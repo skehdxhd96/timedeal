@@ -14,7 +14,7 @@ plugins {
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '1.8'
 
 configurations {
     asciidoctorExtensions
@@ -57,6 +57,7 @@ dependencies {
     implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+    testImplementation 'org.mockito:mockito-inline:3.6.0'
     // QueryDSL
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"

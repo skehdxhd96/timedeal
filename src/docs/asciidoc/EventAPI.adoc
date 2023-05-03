@@ -1,0 +1,40 @@
+= Event API List
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[resources-get]]
+== Get
+
+[[resources-post-findEventList]]
+=== 이벤트 목록 조회
+
+==== HTTP request fields
+
+include::{snippets}/find-eventList/request-headers.adoc[]
+
+==== HTTP response
+
+include::{snippets}/find-eventList/http-response.adoc[]
+
+[[resources-post]]
+== Post
+
+[[resources-post-addEvent]]
+=== 이벤트 등록
+
+==== HTTP request fields
+
+include::{snippets}/add-event/request-headers.adoc[]
+
+==== HTTP request fields
+
+include::{snippets}/add-event/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/add-event/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/add-event/http-response.adoc[]

@@ -12,11 +12,10 @@ import java.util.List;
 public class OrderSaveRequest {
 
     // 불변성
-
     @NotNull
     private List<OrderItemSaveRequest> orderItemRequests;
 
     public OrderSaveRequest() {
-        this.orders = new ArrayList<>();
+        this.orderItemRequests = new ArrayList<>();
     }
 }

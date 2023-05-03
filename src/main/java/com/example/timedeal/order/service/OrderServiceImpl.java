@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService{
 
         /* 재고 감소 */
 
-        stockHistoryService.decrease(request.getProductId(), currentUser);
+//        stockHistoryService.decrease(request.getProductId(), currentUser);
 
         /* 주문 진행 */
 

@@ -15,7 +15,7 @@ import java.util.List;
 public class OrderItems {
 
     @OneToMany(
-            mappedBy = "publishEvent",
+            mappedBy = "order",
             fetch = FetchType.LAZY,
             cascade = CascadeType.PERSIST,
             orphanRemoval = true

@@ -7,10 +7,8 @@ import com.example.timedeal.user.dto.UserSaveRequest;
 import com.example.timedeal.user.dto.UserSaveResponse;
 import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.Consumer;
-import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.service.LoginService;
 import com.example.timedeal.user.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -122,21 +120,20 @@ public class UserControllerTest {
     @DisplayName("회원 탈퇴 테스트")
     void delete_member_test() throws Exception {
 
-        UserLoginRequest userLoginRequest = UserFactory.userLoginRequest();
         Consumer consumer = UserFactory.consumer();
+        UserSelectResponse userSelectResponse = UserFactory.userSelectResponse();
 
         // given
         given(userService.findUser(any(Long.class)))
                 .willReturn(consumer);
         given(loginService.getCurrentUser())
                 .willReturn(AuthUser.of(consumer));
-        willDoNothing()
-                .given(loginService)
-                .logIn(userLoginRequest);
+        given(loginService.logIn(any(UserLoginRequest.class)))
+                .willReturn(userSelectResponse);
 
         // when
         ResultActions perform = mvc.perform(delete("/api/v1/user")
-                .content(objectMapper.writeValueAsString(consumer))
+                .header("COOKIE", httpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.ALL));
 
@@ -152,17 +149,8 @@ public class UserControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestHeaders(
+                        headerWithName(HttpHeaders.COOKIE).description("SESSION"),
                         headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
-                ),
-                requestFields(
-                        fieldWithPath("id").type(STRING).description("Current Login User Id - Don't Have to Send"),
-                        fieldWithPath("userName").type(STRING).description("Current Login User Name - Don't Have to Send"),
-                        fieldWithPath("password").type(STRING).description("Current Login User PW - Don't Have to Send"),
-                        fieldWithPath("userType").type(STRING).description("Current Login User Type - Don't Have to Send"),
-                        fieldWithPath("address").type(STRING).description("Current Login User Address - Don't Have to Send"),
-                        fieldWithPath("orders").type(STRING).description("Current Login User Orders - Don't Have to Send").ignored(),
-                        fieldWithPath("createDate").type(LOCAL_DATE_TIME).description("Current Login User CreateDate - Don't Have to Send"),
-                        fieldWithPath("updateDate").type(LOCAL_DATE_TIME).description("Current Login User UpdateDate - Don't Have to Send")
                 )));
     }
 
@@ -183,7 +171,7 @@ public class UserControllerTest {
 
         //when
         ResultActions perform = mvc.perform(get("/api/v1/user/myPage")
-                .content(objectMapper.writeValueAsString(consumer))
+                .header("COOKIE", httpSession)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.ALL));
 
@@ -203,17 +191,8 @@ public class UserControllerTest {
                 getDocumentRequest(),
                 getDocumentResponse(),
                 requestHeaders(
+                        headerWithName(HttpHeaders.COOKIE).description("SESSION"),
                         headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
-                ),
-                requestFields(
-                        fieldWithPath("id").type(NUMBER).description("Current Login User Id - Don't Have to Send"),
-                        fieldWithPath("userName").type(STRING).description("Current Login User Name - Don't Have to Send"),
-                        fieldWithPath("password").type(STRING).description("Current Login User PW - Don't Have to Send"),
-                        fieldWithPath("userType").type(STRING).description("Current Login User Type - Don't Have to Send"),
-                        fieldWithPath("address").type(STRING).description("Current Login User Address - Don't Have to Send"),
-                        fieldWithPath("orders").description("Current Login User Orders - Don't Have to Send").ignored(),
-                        fieldWithPath("createDate").type(LOCAL_DATE_TIME).description("Current Login User CreateDate - Don't Have to Send"),
-                        fieldWithPath("updateDate").type(LOCAL_DATE_TIME).description("Current Login User UpdateDate - Don't Have to Send")
                 ),
                 responseFields(
                         fieldWithPath("userId").type(NUMBER).description("Current Login User Id"),
@@ -276,6 +255,7 @@ public class UserControllerTest {
 
         // when
         ResultActions perform = mvc.perform(post("/api/v1/user/logout")
+                                .header("COOKIE", httpSession)
                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                 .accept(MediaType.ALL));
 
@@ -287,6 +267,9 @@ public class UserControllerTest {
         // restdocs
         perform.andDo(document("user-logout",
                 getDocumentRequest(),
-                getDocumentResponse()));
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(HttpHeaders.COOKIE).description("SESSION")
+                )));
     }
 }
