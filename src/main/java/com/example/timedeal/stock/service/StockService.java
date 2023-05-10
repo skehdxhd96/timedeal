@@ -10,16 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class StockHistoryService {
+public class StockService {
 
     private final StockHistoryRepository stockHistoryRepository;
     private final ProductService productService;
     private final StockOperation stockOperation;
 
+    /* 물건을 산다. */
     @Transactional
     public void decrease(Long productId, User user) {
-
-        /* 물건을 산다. */
 
         Product product = productService.findDetails(productId);
 
@@ -32,4 +31,5 @@ public class StockHistoryService {
 //        stockHistoryRepository.save()
     }
 
+    // 롤백로직
 }

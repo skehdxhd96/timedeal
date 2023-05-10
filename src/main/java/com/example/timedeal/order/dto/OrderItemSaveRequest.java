@@ -16,12 +16,16 @@ public class OrderItemSaveRequest {
     @NotNull
     private double itemPrice;
 
+    @NotNull
+    private int quantity;
+
     private Long publishEventId;
 
     @Builder
-    public OrderItemSaveRequest(Long productId, double itemPrice, Long publishEventId) {
+    public OrderItemSaveRequest(Long productId, double itemPrice, int quantity, Long publishEventId) {
         this.productId = productId;
         this.itemPrice = itemPrice;
-        this.publishEventId = publishEventId == null ? 0 : publishEventId;
+        this.quantity = quantity;
+        this.publishEventId = publishEventId;
     }
 }

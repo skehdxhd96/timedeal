@@ -31,17 +31,32 @@ public class OrderItems {
                 .anyMatch(orderItem::equals);
     }
 
+    public void addAll(Order order, List<OrderItem> orderItems) {
+        orderItems.forEach(this::validatedOrderItemWhenAdd);
+        
+        orderItems.stream()
+                .forEach(orderItemList::add);
+    }
+
     public void add(OrderItem orderItem) {
-        if (contains(orderItem)) {
-            throw new BusinessException(ErrorCode.ALREADY_IN_ORDER);
-        }
+        validatedOrderItemWhenAdd(orderItem);
         orderItemList.add(orderItem);
     }
 
     public void remove(OrderItem orderItem) {
+        validatedOrderItemWhenRemove(orderItem);
+        orderItemList.remove(orderItem);
+    }
+
+    public void validatedOrderItemWhenRemove(OrderItem orderItem) {
         if (!contains(orderItem)) {
             throw new BusinessException(ErrorCode.NOT_IN_ORDER);
         }
-        orderItemList.remove(orderItem);
+    }
+
+    public void validatedOrderItemWhenAdd(OrderItem orderItem) {
+        if (contains(orderItem)) {
+            throw new BusinessException(ErrorCode.ALREADY_IN_ORDER);
+        }
     }
 }

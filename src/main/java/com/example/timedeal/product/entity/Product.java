@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -17,6 +18,7 @@ import java.util.Objects;
 @Table(name = "product")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Slf4j
 public class Product extends baseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,9 +50,11 @@ public class Product extends baseEntity {
         this.totalStockQuantity = totalStockQuantity;
     }
 
-    public boolean validatedInEvent() {
-        return this.productEvent != null
-                && this.productEvent.getPublishEvent().isInProgress();
+    public void validatedInEvent() {
+        if(this.productEvent != null) {
+            this.productEvent.getPublishEvent().isInProgress();
+            log.info("{} 상품의 이벤트 기간에 벗어남. 상품 아이디 : {}" , this.productName, this.id);
+        }
     }
 
     public void validateOnEvent() {

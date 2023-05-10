@@ -1,12 +1,16 @@
 package com.example.timedeal.order.service;
 
+import com.example.timedeal.order.dto.OrderAssembler;
 import com.example.timedeal.order.dto.OrderItemSaveRequest;
 import com.example.timedeal.order.dto.OrderSaveRequest;
 import com.example.timedeal.order.dto.OrderSelectResponse;
+import com.example.timedeal.order.entity.Order;
+import com.example.timedeal.order.entity.OrderItem;
+import com.example.timedeal.order.entity.OrderStatus;
 import com.example.timedeal.order.repository.OrderRepository;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.repository.ProductRepository;
-import com.example.timedeal.stock.service.StockHistoryService;
+import com.example.timedeal.stock.service.StockService;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,28 +25,51 @@ public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final StockHistoryService stockHistoryService;
+    private final StockService stockService;
 
     @Override
     @Transactional
     public OrderSelectResponse doOrder(OrderSaveRequest request, User currentUser) {
 
-        /* 이벤트인 경우 / 일반 상품인 경우 => 이벤트인 경우 시간/재고 체크, 일반상품인 경우 재고 체크 ( 유효성 체크 )*/
-        List<Long> productIds = request.getOrderItemRequests().stream()
-                .map(OrderItemSaveRequest::getProductId)
+        // 주문지 생성
+        Order order = createEmptyOrder(currentUser);
+
+        List<Long> productIds = getProductIds(request);
+        List<Product> products = findProductByIds(productIds); // 여기서 flush 되는지 확인
+
+        products.forEach(Product::validatedInEvent); // 이벤트 상품이라면 기간 검사
+
+        // 주문지에 주문아이템 삽입
+        List<OrderItem> orderItems = products.stream()
+                .map(p -> OrderAssembler.orderItem(p, request, order))
                 .collect(Collectors.toList());
 
-        List<Product> products = findProductByIds(productIds);
-        // product.validatedOnStock();
+        order.addOrderItems(orderItems);
 
+        /* 재고 검사 */
         /* 재고 감소 */
 
-//        stockHistoryService.decrease(request.getProductId(), currentUser);
+//        stockService.decrease(request.getProductId(), currentUser);
 
         /* 주문 진행 */
 
-        /* 롤백 로직 => 이벤트 큐를 쓰면 더 효율적이나 시간상 이벤트 큐는 나중으로 미룬다. */
         return new OrderSelectResponse();
+    }
+
+    private List<Long> getProductIds(OrderSaveRequest request) {
+        return request.getOrderItemRequests()
+                                        .stream()
+                                        .map(OrderItemSaveRequest::getProductId)
+                                        .collect(Collectors.toList());
+    }
+
+    public Order createEmptyOrder(User currentUser) {
+        Order order = Order.builder()
+                .orderedBy(currentUser)
+                .orderStatus(OrderStatus.WAIT)
+                .build();
+
+        return orderRepository.save(order);
     }
 
     private List<Product> findProductByIds(List<Long> productIds) {

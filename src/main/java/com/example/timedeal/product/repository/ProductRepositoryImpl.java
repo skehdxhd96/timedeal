@@ -1,7 +1,6 @@
 package com.example.timedeal.product.repository;
 
 import com.example.timedeal.Event.entity.EventStatus;
-import com.example.timedeal.common.entity.RestPage;
 import com.example.timedeal.product.dto.ProductSearchRequest;
 import com.example.timedeal.product.entity.Product;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -69,6 +68,17 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
                 .fetchFirst();
 
         return PageableExecutionUtils.getPage(products, pageable, () -> count);
+    }
+
+    @Override
+    public List<Product> findProductDetailByProductIds(List<Long> productIds) {
+        return queryFactory
+                .select(product)
+                .from(product)
+                .leftJoin(product.productEvent, productEvent).fetchJoin()
+                .leftJoin(productEvent.publishEvent, publishEvent).fetchJoin()
+                .where(product.id.in(productIds))
+                .fetch();
     }
 
     private BooleanExpression eqProductName(String searchKeyword) {

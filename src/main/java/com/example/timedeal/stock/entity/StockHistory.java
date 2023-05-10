@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // 인덱싱 ?
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 인덱싱 ? => 맨 위의 값을 limit로 가져와야 하기 때문에 하는게 나을지도 ?
 public class StockHistory extends baseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

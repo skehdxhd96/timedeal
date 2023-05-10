@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,40 +23,31 @@ public class Order extends baseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "consumer_id")
     private User orderedBy;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
     @Embedded
     private OrderItems orderItems;
-
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;
-
     private int originalPrice;
-
     private int totalPrice;
-
-    private Long publishEventId;
+    private String etc;
 
     @Builder
-    public Order(Long id, User orderedBy, Product product, OrderStatus orderStatus,
-                 int originalPrice, int totalPrice, Long publishEventId) {
+    public Order(Long id, User orderedBy, OrderStatus orderStatus,
+                 int originalPrice, int totalPrice, String etc) {
         this.id = id;
         this.orderedBy = orderedBy;
-        this.product = product;
         this.orderStatus = orderStatus;
         this.originalPrice = originalPrice;
         this.totalPrice = totalPrice;
-        this.publishEventId = publishEventId;
+        this.etc = etc;
     }
 
-    //TODO: Product Dto 재정의
+    public void addOrderItems(List<OrderItem> items) {
+        orderItems.addAll(this, items);
+    }
 
     public void add(Product product) {
         OrderItem orderItem = OrderItem.builder()

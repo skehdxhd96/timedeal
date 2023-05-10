@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.util.Objects;
 @Table(name = "publish_event")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Slf4j
 public class PublishEvent extends baseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,12 +42,12 @@ public class PublishEvent extends baseEntity {
     private String eventName;
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
-    private int eventDesc;
+    private double eventDesc;
     private String eventCode;
 
     @Builder
     public PublishEvent(Long id, Event event, ProductEvents productEvents, EventStatus eventStatus, String eventName,
-                        LocalDateTime eventStartTime, LocalDateTime eventEndTime, int eventDesc, String eventCode) {
+                        LocalDateTime eventStartTime, LocalDateTime eventEndTime, double eventDesc, String eventCode) {
         this.id = id;
         this.event = event;
         this.productEvents = productEvents;
@@ -75,16 +77,17 @@ public class PublishEvent extends baseEntity {
         productEvents.remove(productEvent);
     }
 
-    public boolean isInProgress() {
+    public void isInProgress() {
 
         LocalDateTime now = LocalDateTime.now();
 
         if(this.eventStartTime.isAfter(now)
             || this.eventEndTime.isBefore(now)) {
-            return false;
-        }
 
-        return true;
+            log.error("현재 {} 이벤트 기간에 벗어남. 이벤트 아이디 : {}", this.eventName, this.id);
+
+            throw new BusinessException(ErrorCode.NOT_IN_PROGRESSING);
+        }
     }
 
     @Override

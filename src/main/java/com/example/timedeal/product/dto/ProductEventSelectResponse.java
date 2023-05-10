@@ -13,7 +13,7 @@ public class ProductEventSelectResponse extends ProductSelectResponse{
     private String eventName;
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
-    private int eventDesc;
+    private double eventDesc;
 
     private ProductEventSelectResponse(Product product) {
 
