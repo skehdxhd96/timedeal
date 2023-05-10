@@ -1,0 +1,70 @@
+= Event API List
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[resources-get]]
+== Get
+
+[[resources-post-findEventList]]
+=== 이벤트 목록 조회
+
+==== HTTP request headers
+
+include::{snippets}/find-eventList/request-headers.adoc[]
+
+==== HTTP response
+
+include::{snippets}/find-eventList/http-response.adoc[]
+
+[[resources-post-findPublishEventList]]
+=== 발행 이벤트 목록 조회
+
+==== HTTP request headers
+
+include::{snippets}/find-publish-event-list/request-headers.adoc[]
+
+==== HTTP response
+
+include::{snippets}/find-publish-event-list/http-response.adoc[]
+
+[[resources-post]]
+== Post
+
+[[resources-post-addEvent]]
+=== 이벤트 등록
+
+==== HTTP request headers
+
+include::{snippets}/add-event/request-headers.adoc[]
+
+==== HTTP request fields
+
+include::{snippets}/add-event/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/add-event/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/add-event/http-response.adoc[]
+
+[[resources-post-publishEvent]]
+=== 이벤트 발행
+
+==== HTTP request headers
+
+include::{snippets}/event-publish/request-headers.adoc[]
+
+==== HTTP request fields
+
+include::{snippets}/event-publish/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/event-publish/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/event-publish/http-response.adoc[]

@@ -1,14 +1,20 @@
 package com.example.timedeal.user.entity;
 
 import com.example.timedeal.common.entity.baseEntity;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "user")
 @Getter
-public class User extends baseEntity {
+@Table(name = "users")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "Role")
+public abstract class User extends baseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -17,9 +23,14 @@ public class User extends baseEntity {
     @Enumerated(value = EnumType.STRING)
     private UserType userType;
 
-    private String username;
+    private String userName;
 
     private String password;
 
-    private String sessionId;
+    public User(Long id, String userName, String password, UserType userType) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.userType = userType;
+    }
 }
