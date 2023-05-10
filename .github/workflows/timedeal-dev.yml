@@ -13,7 +13,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -68,3 +68,5 @@ jobs:
             sudo docker rm -f ${{ secrets.CONTAINER }}
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
             sudo docker run -d -t --name ${{ secrets.CONTAINER }} -p 80:8080 ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DEV_IMAGE_NAME }}:latest
+// setup-qmenu-action
+// setup-buildx-action
