@@ -1,21 +1,25 @@
 package com.example.timedeal.stock.service;
 
+import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.stock.dto.Stock;
+import com.google.common.base.Functions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class TotalStockOperation implements StockOperation{
 
+    /**
+     * Redis Stock = <StockKey : 남은 재고 양>
+     */
     private final RedisTemplate<String, String> redisTemplate;
     private static final String TotalStockKey = "stock:total:%d";
+    private static final String STOCK_NOT_EXIST = "-1";
 
     @Override
     public String generateKey(Long productId) {
@@ -23,21 +27,16 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
+    public void register(Product product) {
+        String key = generateKey(product.getId());
+        redisTemplate.opsForValue().set(key, String.valueOf(product.getTotalStockQuantity()));
+    }
+
+    @Override
     public void add(Stock stock) {
 
         String key = generateKey(stock.getProductId());
 
-        redisTemplate.execute(new SessionCallback<Object>() {
-
-            @Override
-            public <K, V> Object execute(RedisOperations<K, V> redisOperations) throws DataAccessException {
-                redisOperations.multi();
-                for(int count = 1; count <= stock.getQuantity(); count++) {
-//                    redisOperations.opsForSet().add(key, stock.getPurchaseCode().get(count).toString());
-                }
-                return redisOperations.exec();
-            }
-        });
     }
 
     @Override
@@ -45,16 +44,15 @@ public class TotalStockOperation implements StockOperation{
 
         String key = generateKey(stock.getProductId());
 
-        for(int count = 1; count <= stock.getQuantity(); count++) {
-//            redisOperations.opsForSet().remove(key, stock.getPurchaseCode().get(count).toString());
-        }
     }
 
     @Override
-    public Long getTotalUsedCount(RedisOperations<String, String> redisOperations, Stock stock) {
+    public int getStockRemaining(Product product) {
 
-        String key = generateKey(stock.getProductId());
+        String key = generateKey(product.getId());
 
-        return redisOperations.opsForSet().size(key);
+        Optional.ofNullable(redisTemplate.opsForValue().get(key))
+                .orElse(STOCK_NOT_EXIST);
+
     }
 }

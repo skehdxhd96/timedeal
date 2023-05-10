@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class StockService {
@@ -32,4 +34,11 @@ public class StockService {
     }
 
     // 롤백로직
+    
+    // 상품의 재고를 가져온다.
+    @Transactional(readOnly = true)
+    public int getStockRemaining(Product product) {
+
+        Optional
+    }
 }

@@ -31,20 +31,16 @@ public class OrderServiceImpl implements OrderService{
     @Transactional
     public OrderSelectResponse doOrder(OrderSaveRequest request, User currentUser) {
 
-        // 주문지 생성
+        // 빈 주문지 생성
         Order order = createEmptyOrder(currentUser);
 
-        List<Long> productIds = getProductIds(request);
-        List<Product> products = findProductByIds(productIds); // 여기서 flush 되는지 확인
-
-        products.forEach(Product::validatedInEvent); // 이벤트 상품이라면 기간 검사
+        List<Product> products = findProductByIds(getProductIds(request)); // 여기서 flush 되는지 확인
+        products.forEach(Product::validatedInEvent);
 
         // 주문지에 주문아이템 삽입
-        List<OrderItem> orderItems = products.stream()
-                .map(p -> OrderAssembler.orderItem(p, request, order))
-                .collect(Collectors.toList());
-
-        order.addOrderItems(orderItems);
+        order.addOrderItems(products.stream()
+                                .map(p -> OrderAssembler.orderItem(p, request, order))
+                                .collect(Collectors.toList()));
 
         /* 재고 검사 */
         /* 재고 감소 */
