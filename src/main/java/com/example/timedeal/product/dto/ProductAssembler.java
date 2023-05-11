@@ -13,6 +13,7 @@ public class ProductAssembler {
                 .description(request.getDescription())
                 .productPrice(request.getProductPrice())
                 .productName(request.getProductName())
+                .totalStockQuantity(request.getTotalStockQuantity())
                 .build();
     }
 

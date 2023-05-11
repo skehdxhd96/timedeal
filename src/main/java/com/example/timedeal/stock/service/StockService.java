@@ -39,6 +39,6 @@ public class StockService {
     @Transactional(readOnly = true)
     public int getStockRemaining(Product product) {
 
-        Optional
+        return 1;
     }
 }

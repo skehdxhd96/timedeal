@@ -21,10 +21,14 @@ public class ProductSaveRequest {
     @NotBlank
     private String description;
 
+    @NotNull
+    private int totalStockQuantity;
+
     @Builder
-    public ProductSaveRequest(String productName, int productPrice, String description) {
+    public ProductSaveRequest(String productName, int productPrice, String description, int totalStockQuantity) {
         this.productName = productName;
         this.productPrice = productPrice;
         this.description = description;
+        this.totalStockQuantity = totalStockQuantity;
     }
 }

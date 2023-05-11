@@ -54,5 +54,6 @@ public class TotalStockOperation implements StockOperation{
         Optional.ofNullable(redisTemplate.opsForValue().get(key))
                 .orElse(STOCK_NOT_EXIST);
 
+        return 1;
     }
 }

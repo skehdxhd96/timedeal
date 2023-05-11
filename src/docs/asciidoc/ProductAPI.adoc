@@ -1,0 +1,49 @@
+= Product API List
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[resources-get]]
+== Get
+
+
+
+[[resources-post]]
+== Post
+
+[[resources-product-register]]
+=== 상품 등록
+
+==== HTTP request headers
+
+include::{snippets}/product-register/request-headers.adoc[]
+
+==== HTTP request fields
+
+include::{snippets}/product-register/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/product-register/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/product-register/http-response.adoc[]
+
+[[resources-delete]]
+== Delete
+
+[[resources-product-register]]
+=== 상품 삭제
+
+==== HTTP request headers
+
+include::{snippets}/remove-product/request-headers.adoc[]
+
+==== HTTP request Parameter
+
+include::{snippets}/remove-product/path-parameters.adoc[]
+
+==== HTTP response
+
+include::{snippets}/remove-product/http-response.adoc[]
