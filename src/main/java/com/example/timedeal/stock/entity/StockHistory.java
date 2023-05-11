@@ -17,24 +17,22 @@ public class StockHistory extends baseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_history_id")
     private Long id;
-
     @Enumerated(value = EnumType.STRING)
     private StockHistoryType type;
-
     private Long consumerId;
     private Long productId;
-    private UUID purchaseCode;
+    private Long orderId;
     private int quantity;
     private double price;
 
     @Builder
     public StockHistory(Long id, StockHistoryType type, Long consumerId,
-                        Long productId, UUID purchaseCode, int quantity, double price) {
+                        Long productId, Long orderId, int quantity, double price) {
         this.id = id;
         this.type = type;
         this.consumerId = consumerId;
         this.productId = productId;
-        this.purchaseCode = purchaseCode;
+        this.orderId = orderId;
         this.quantity = quantity;
         this.price = price;
     }

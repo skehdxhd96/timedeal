@@ -44,7 +44,6 @@ public class Order extends baseEntity {
         this.totalPrice = totalPrice;
         this.etc = etc;
     }
-
     public void addOrderItems(List<OrderItem> items) {
         orderItems.addAll(this, items);
     }

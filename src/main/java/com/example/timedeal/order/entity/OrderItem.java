@@ -1,6 +1,8 @@
 package com.example.timedeal.order.entity;
 
 import com.example.timedeal.common.entity.baseEntity;
+import com.example.timedeal.common.exception.BusinessException;
+import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.entity.ProductEvent;
 import lombok.AccessLevel;
@@ -46,6 +48,12 @@ public class OrderItem extends baseEntity {
 
     public void setRealPrice(double eventDesc) {
         this.itemRealPrice = eventDesc * this.itemPrice;
+    }
+
+    public void validatedOnStock(int remaining) {
+        if(this.getQuantity() > remaining) {
+            throw new BusinessException(ErrorCode.STOCK_NOT_ENOUGH);
+        }
     }
 
     @Override

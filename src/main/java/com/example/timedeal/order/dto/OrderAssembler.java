@@ -4,9 +4,12 @@ import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.entity.OrderItem;
+import com.example.timedeal.order.entity.OrderItems;
 import com.example.timedeal.product.entity.Product;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class OrderAssembler {
     private OrderAssembler() {}
@@ -30,6 +33,12 @@ public class OrderAssembler {
         orderItem.setRealPrice(eventDesc);
 
         return orderItem;
+    }
+
+    public static List<OrderItem> orderItems(List<Product> products, OrderSaveRequest request, Order order) {
+        return products.stream()
+                .map(p -> orderItem(p, request, order))
+                .collect(Collectors.toList());
     }
 
     private static OrderItemSaveRequest getOrderItemSaveRequest(Product product, OrderSaveRequest orderSaveRequest) {

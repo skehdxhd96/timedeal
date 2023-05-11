@@ -13,8 +13,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class StockService {
-
-    private final StockHistoryRepository stockHistoryRepository;
     private final ProductService productService;
     private final StockOperation stockOperation;
 
@@ -38,7 +36,6 @@ public class StockService {
     // 상품의 재고를 가져온다.
     @Transactional(readOnly = true)
     public int getStockRemaining(Product product) {
-
-        return 1;
+        return stockOperation.getStockRemaining(product);
     }
 }

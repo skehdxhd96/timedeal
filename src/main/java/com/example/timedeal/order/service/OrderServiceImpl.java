@@ -6,6 +6,7 @@ import com.example.timedeal.order.dto.OrderSaveRequest;
 import com.example.timedeal.order.dto.OrderSelectResponse;
 import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.entity.OrderItem;
+import com.example.timedeal.order.entity.OrderItems;
 import com.example.timedeal.order.entity.OrderStatus;
 import com.example.timedeal.order.repository.OrderRepository;
 import com.example.timedeal.product.entity.Product;
@@ -37,15 +38,18 @@ public class OrderServiceImpl implements OrderService{
         List<Product> products = findProductByIds(getProductIds(request)); // 여기서 flush 되는지 확인
         products.forEach(Product::validatedInEvent);
 
-        // 주문지에 주문아이템 삽입
-        order.addOrderItems(products.stream()
-                                .map(p -> OrderAssembler.orderItem(p, request, order))
-                                .collect(Collectors.toList()));
+        /* 주문지에 주문아이템 삽입 */
+        order.addOrderItems(OrderAssembler.orderItems(products, request, order));
 
         /* 재고 검사 */
+        order.getOrderItems()
+                .getElements()
+                .forEach(o -> o.validatedOnStock(stockService.getStockRemaining(o.getProduct())));
+
         /* 재고 감소 */
 
 //        stockService.decrease(request.getProductId(), currentUser);
+
 
         /* 주문 진행 */
 

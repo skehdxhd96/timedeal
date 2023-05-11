@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Embeddable
@@ -33,9 +34,11 @@ public class OrderItems {
 
     public void addAll(Order order, List<OrderItem> orderItems) {
         orderItems.forEach(this::validatedOrderItemWhenAdd);
-        
-        orderItems.stream()
-                .forEach(orderItemList::add);
+        orderItemList.addAll(orderItems);
+    }
+
+    public List<OrderItem> getElements() {
+        return Collections.unmodifiableList(this.orderItemList);
     }
 
     public void add(OrderItem orderItem) {

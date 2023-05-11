@@ -1,13 +1,12 @@
 package com.example.timedeal.stock.service;
 
 import com.example.timedeal.product.entity.Product;
-import com.example.timedeal.stock.dto.Stock;
-import com.google.common.base.Functions;
+import com.example.timedeal.stock.entity.StockHistory;
+import com.example.timedeal.stock.repository.StockHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -18,8 +17,8 @@ public class TotalStockOperation implements StockOperation{
      * Redis Stock = <StockKey : 남은 재고 양>
      */
     private final RedisTemplate<String, String> redisTemplate;
+    private final StockHistoryRepository stockHistoryRepository;
     private static final String TotalStockKey = "stock:total:%d";
-    private static final String STOCK_NOT_EXIST = "-1";
 
     @Override
     public String generateKey(Long productId) {
@@ -51,9 +50,29 @@ public class TotalStockOperation implements StockOperation{
 
         String key = generateKey(product.getId());
 
-        Optional.ofNullable(redisTemplate.opsForValue().get(key))
-                .orElse(STOCK_NOT_EXIST);
+        String remaining = redisTemplate.opsForValue().get(key);
 
-        return 1;
+        if(remaining == null)
+            return getStockRemainingIfNotExistInRedis(product);
+
+        return Integer.parseInt(remaining);
+    }
+
+    // TODO : 동시성 문제가 발생 할 수 있나 검사( 두 스레드 동시 접근 시 Redis에 재고가 없어 RDB에서 조회할 때 )
+    private int getStockRemainingIfNotExistInRedis(Product product) {
+
+        String key = generateKey(product.getId());
+
+        int usedStock = stockHistoryRepository
+                        .findByProductId(product.getId())
+                        .stream()
+                        .mapToInt(StockHistory::getQuantity)
+                        .sum();
+
+        int remaining = product.getTotalStockQuantity() - usedStock;
+
+        redisTemplate.opsForValue().set(key, String.valueOf(remaining));
+
+        return remaining;
     }
 }
