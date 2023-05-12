@@ -7,9 +7,9 @@ public interface StockOperation {
     String generateKey(Long productId);
 
     void register(Product product);
-    void add(Stock stock);
+    void add(Product product);
 
-    void remove(Stock stock);
+    void remove(Product product);
 
     int getStockRemaining(Product product);
 }

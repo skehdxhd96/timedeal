@@ -32,16 +32,16 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
-    public void add(Stock stock) {
+    public void add(Product product) {
 
-        String key = generateKey(stock.getProductId());
+        String key = generateKey(product.getId());
 
     }
 
     @Override
-    public void remove(Stock stock) {
+    public void remove(Product product) {
 
-        String key = generateKey(stock.getProductId());
+        String key = generateKey(product.getId());
 
     }
 

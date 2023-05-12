@@ -1,9 +1,12 @@
 package com.example.timedeal.common.factory;
 
+import com.example.timedeal.product.dto.ProductEventRequest;
 import com.example.timedeal.product.dto.ProductSaveRequest;
 import com.example.timedeal.product.dto.ProductSelectResponse;
 import com.example.timedeal.product.dto.ProductUpdateRequest;
 import com.example.timedeal.product.entity.Product;
+import com.example.timedeal.product.entity.ProductEvent;
+import com.example.timedeal.product.entity.ProductEvents;
 
 import java.time.LocalDateTime;
 
@@ -27,6 +30,14 @@ public class ProductFactory {
                 .productPrice(20000)
                 .description("test product updated")
                 .build();
+    }
+
+    public static ProductEventRequest productEventRequest() {
+        return new ProductEventRequest(1L);
+    }
+
+    public static ProductSelectResponse productSelectResponse() {
+        return ProductSelectResponse.of(product());
     }
 
     public static ProductSelectResponse productUpdateSelectResponse() {
@@ -54,5 +65,9 @@ public class ProductFactory {
                 .description("test product 1 desc")
                 .totalStockQuantity(100)
                 .build();
+    }
+
+    public static ProductEvents productEvents() {
+        return new ProductEvents();
     }
 }

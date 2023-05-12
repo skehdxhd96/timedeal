@@ -32,13 +32,10 @@ public class PublishEvent extends baseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
-
     @Embedded
     private ProductEvents productEvents;
-
     @Enumerated(value = EnumType.STRING)
     private EventStatus eventStatus;
-
     private String eventName;
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;

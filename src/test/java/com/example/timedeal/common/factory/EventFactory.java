@@ -7,6 +7,7 @@ import com.example.timedeal.Event.dto.PublishEventSelectResponse;
 import com.example.timedeal.Event.entity.Event;
 import com.example.timedeal.Event.entity.EventStatus;
 import com.example.timedeal.Event.entity.PublishEvent;
+import com.example.timedeal.product.entity.ProductEvent;
 import com.example.timedeal.product.entity.ProductEvents;
 
 import java.time.LocalDateTime;
@@ -61,14 +62,15 @@ public class EventFactory {
     }
 
     public static PublishEvent publishEvent() {
+
         return PublishEvent.builder()
                 .id(1L)
                 .event(event())
                 .eventStatus(EventStatus.IN_PROGRESS)
                 .productEvents(new ProductEvents())
                 .eventName("2023/05 timedeal")
-                .eventStartTime(LocalDateTime.of(2023,5,1, 0, 0,0))
-                .eventEndTime(LocalDateTime.of(2023,5,31,23,59,59))
+                .eventStartTime(LocalDateTime.of(2023, 5, 1, 0, 0, 0))
+                .eventEndTime(LocalDateTime.of(2023, 5, 31, 23, 59, 59))
                 .eventDesc(10)
                 .eventCode(EventAssembler.generateEventCode(event(), publishEventSaveRequest()))
                 .build();

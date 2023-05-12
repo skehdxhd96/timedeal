@@ -1,15 +1,13 @@
 package com.example.timedeal.product;
 
-import com.example.timedeal.Event.dto.EventAssembler;
-import com.example.timedeal.Event.service.EventService;
+import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.common.dto.AuthUser;
+import com.example.timedeal.common.factory.EventFactory;
 import com.example.timedeal.common.factory.ProductFactory;
 import com.example.timedeal.common.factory.UserFactory;
-import com.example.timedeal.product.dto.ProductAssembler;
-import com.example.timedeal.product.dto.ProductSaveRequest;
-import com.example.timedeal.product.dto.ProductSelectResponse;
-import com.example.timedeal.product.dto.ProductUpdateRequest;
+import com.example.timedeal.product.dto.*;
 import com.example.timedeal.product.entity.Product;
+import com.example.timedeal.product.entity.ProductEvent;
 import com.example.timedeal.product.service.ProductService;
 import com.example.timedeal.user.entity.Administrator;
 import com.example.timedeal.user.service.LoginService;
@@ -33,9 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static com.example.timedeal.ApiDocumentUtils.*;
-import static com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes.INTEGER;
-import static javax.xml.xpath.XPathConstants.STRING;
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes.*;
 import static org.assertj.core.api.InstanceOfAssertFactories.LONG;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -44,8 +40,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -58,8 +53,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Slf4j
 public class ProductControllerTest {
-
-    public static final String USER_SESSION_KEY = "USER_ID";
     @Autowired
     private MockMvc mvc;
     @Autowired
@@ -187,14 +180,14 @@ public class ProductControllerTest {
                 .willReturn(productUpdateSelectResponse);
 
         // when
-        ResultActions perform = mvc.perform(post("/api/v1/product/{productId}", 1L)
+        ResultActions perform = mvc.perform(put("/api/v1/product/{productId}", 1L)
                 .header("COOKIE", httpSession)
                 .content(objectMapper.writeValueAsString(productUpdateRequest))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE));
 
         // then
-        perform.andExpect(status().isOk())
+        perform.andExpect(status().isCreated())
                 .andExpect(content().string(expectedResult));
 
         verify(productService, times(1))
@@ -226,13 +219,42 @@ public class ProductControllerTest {
 
     @Test
     @DisplayName("상품 상세 조회 테스트")
-    void find_product_detail_test() {
+    void find_product_detail_test() throws Exception {
+
+        Product product = ProductFactory.product();
+        ProductSelectResponse productSelectResponse = ProductFactory.productSelectResponse();
+
+        String expectedResult = objectMapper.writeValueAsString(productSelectResponse);
 
         // given
+        given(productService.findDetails(any(Long.class)))
+                .willReturn(product);
 
         // when
+        ResultActions perform = mvc.perform(get("/api/v1/product/{productId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
 
         // then
+        perform.andExpect(status().isOk())
+                .andExpect(content().string(expectedResult));
+
+        verify(productService, times(1))
+                .findDetails(any(Long.class));
+
+        // restdocs
+        perform.andDo(document("find-detail-product",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                pathParameters(
+                        parameterWithName("productId").description("product id")
+                ),
+                responseFields(
+                        fieldWithPath("id").type(NUMBER).description("product id"),
+                        fieldWithPath("productName").type(STRING).description("product name"),
+                        fieldWithPath("productPrice").type(NUMBER).description("product price"),
+                        fieldWithPath("description").type(STRING).description("product description")
+                )));
     }
 
     @Test
@@ -248,23 +270,81 @@ public class ProductControllerTest {
 
     @Test
     @DisplayName("상품 이벤트 할당 테스트")
-    void assign_event_to_product_test() {
+    void assign_event_to_product_test() throws Exception {
+
+        Administrator administrator = UserFactory.administrator();
+        ProductEventRequest productEventRequest = ProductFactory.productEventRequest();
 
         // given
+        given(loginService.getCurrentUser())
+                .willReturn(AuthUser.of(administrator));
+        given(userService.findUser(any(Long.class)))
+                .willReturn(administrator);
+        willDoNothing()
+                .given(productService)
+                .assignEvent(any(Long.class), any(ProductEventRequest.class));
 
         // when
+        ResultActions perform = mvc.perform(post("/api/v1/product/event/{productId}", 1L)
+                .header("COOKIE", httpSession)
+                .content(objectMapper.writeValueAsString(productEventRequest))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE));
 
         // then
+        perform.andExpect(status().isNoContent());
+        verify(productService, times(1))
+                .assignEvent(any(Long.class), any(ProductEventRequest.class));
+
+        // restdocs
+        perform.andDo(document("assign-event-to-product",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(HttpHeaders.COOKIE).description("SESSION")
+                ),
+                pathParameters(
+                        parameterWithName("productId").description("product id")
+                ),
+                requestFields(
+                        fieldWithPath("publishEventId").type(NUMBER).description("publish event id")
+                )));
     }
 
     @Test
     @DisplayName("상품 이벤트 해지 테스트")
-    void terminate_event_to_product_test() {
+    void terminate_event_to_product_test() throws Exception {
+
+        Administrator administrator = UserFactory.administrator();
 
         // given
+        given(loginService.getCurrentUser())
+                .willReturn(AuthUser.of(administrator));
+        given(userService.findUser(any(Long.class)))
+                .willReturn(administrator);
+        willDoNothing()
+                .given(productService)
+                .terminateEvent(any(Long.class), any(Long.class));
 
         // when
+        ResultActions perform = mvc.perform(delete("/api/v1/product/event/{productId}/terminate/{publishEventId}", 1L, 1L)
+                                    .header("COOKIE", httpSession));
 
         // then
+        perform.andExpect(status().isNoContent());
+        verify(productService, times(1))
+                .terminateEvent(any(Long.class), any(Long.class));
+
+        // restdocs
+        perform.andDo(document("terminate-event-from-product",
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(HttpHeaders.COOKIE).description("SESSION")
+                ),
+                pathParameters(
+                        parameterWithName("productId").description("product id"),
+                        parameterWithName("publishEventId").description("publish event id")
+                )));
     }
 }
