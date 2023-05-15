@@ -38,6 +38,7 @@ public class Event extends baseEntity {
         this.eventType = eventType;
     }
 
+    // TODO 로직 수정해야 함.
     public void publish(PublishEvent publishEvent) {
         publishEvent.setEvent(this);
         this.publishEvents.add(publishEvent);

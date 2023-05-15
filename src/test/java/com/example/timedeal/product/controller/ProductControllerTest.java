@@ -1,4 +1,4 @@
-package com.example.timedeal.product;
+package com.example.timedeal.product.controller;
 
 import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.common.dto.AuthUser;

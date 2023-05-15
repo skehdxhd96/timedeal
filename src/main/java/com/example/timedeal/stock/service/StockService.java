@@ -5,8 +5,11 @@ import com.example.timedeal.product.service.ProductService;
 import com.example.timedeal.stock.repository.StockHistoryRepository;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Optional;
 
@@ -17,6 +20,7 @@ public class StockService {
     private final StockOperation stockOperation;
 
     /* 물건을 산다. */
+    @Async
     @Transactional
     public void decrease(Long productId, User user) {
 
@@ -32,6 +36,20 @@ public class StockService {
     }
 
     // 롤백로직
+    public void stockRollBackOnOrder() {
+        TransactionSynchronizationManager.registerSynchronization(
+                new TransactionSynchronization() {
+                    @Override
+                    public void afterCompletion(int status) {
+                        if(status == STATUS_ROLLED_BACK) {
+
+                        }
+                    }
+                }
+        );
+    }
+
+
     
     // 상품의 재고를 가져온다.
     @Transactional(readOnly = true)

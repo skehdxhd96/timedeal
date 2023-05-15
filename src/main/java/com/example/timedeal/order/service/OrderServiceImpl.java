@@ -34,8 +34,9 @@ public class OrderServiceImpl implements OrderService{
 
         // 빈 주문지 생성
         Order order = createEmptyOrder(currentUser);
+        orderRepository.saveAndFlush(order);
 
-        List<Product> products = findProductByIds(getProductIds(request)); // 여기서 flush 되는지 확인
+        List<Product> products = findProductByIds(getProductIds(request));
         products.forEach(Product::validatedInEvent);
 
         /* 주문지에 주문아이템 삽입 */
@@ -52,8 +53,7 @@ public class OrderServiceImpl implements OrderService{
 
 
         /* 주문 진행 */
-
-        return new OrderSelectResponse();
+        return new OrderSelectResponse(order);
     }
 
     private List<Long> getProductIds(OrderSaveRequest request) {
