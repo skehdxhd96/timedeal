@@ -30,13 +30,13 @@ public class OrderItem extends baseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
-    private double itemPrice;
+    private int itemPrice;
     private Long publishEventId;
-    private double itemRealPrice;
+    private int itemRealPrice;
     private int quantity;
 
     @Builder
-    public OrderItem(Long id, Order order, Product product, double itemPrice, Long publishEventId, double itemRealPrice, int quantity) {
+    public OrderItem(Long id, Order order, Product product, int itemPrice, Long publishEventId, int itemRealPrice, int quantity) {
         this.id = id;
         this.order = order;
         this.product = product;
@@ -47,7 +47,7 @@ public class OrderItem extends baseEntity {
     }
 
     public void setRealPrice(double eventDesc) {
-        this.itemRealPrice = eventDesc * this.itemPrice;
+        this.itemRealPrice = (int) (eventDesc * this.itemPrice);
     }
 
     public void validatedOnStock(int remaining) {

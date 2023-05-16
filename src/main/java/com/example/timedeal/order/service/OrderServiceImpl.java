@@ -11,7 +11,12 @@ import com.example.timedeal.order.entity.OrderStatus;
 import com.example.timedeal.order.repository.OrderRepository;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.repository.ProductRepository;
+import com.example.timedeal.stock.dto.StockAssembler;
+import com.example.timedeal.stock.entity.StockHistory;
+import com.example.timedeal.stock.entity.StockHistoryType;
+import com.example.timedeal.stock.repository.StockHistoryRepository;
 import com.example.timedeal.stock.service.StockService;
+import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,12 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.timedeal.stock.entity.StockHistoryType.MINUS;
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final StockHistoryRepository stockHistoryRepository;
     private final StockService stockService;
 
     @Override
@@ -48,13 +56,40 @@ public class OrderServiceImpl implements OrderService{
                 .forEach(o -> o.validatedOnStock(stockService.getStockRemaining(o.getProduct())));
 
         /* 재고 감소 <락 걸고 진행해야 함.>*/
-        stockService.stockRollBackOnOrder(order);
+        stockService.decreaseStockOnOrder(order);
 
-//        stockService.decrease(request.getProductId(), currentUser);
-
+        saveHistory(currentUser, order);
 
         /* 주문 진행 */
-        return new OrderSelectResponse(order);
+        return OrderSelectResponse.of(order);
+    }
+
+    // TODO : Indexing
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderSelectResponse> findMyOrderList(User currentUser) {
+
+        List<Order> orders = orderRepository.findAllByOrderedBy(currentUser);
+
+        return orders.stream().map(OrderSelectResponse::of).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserSelectResponse> findOrderedList(Long productId) {
+
+
+
+        return null;
+    }
+
+    @Transactional
+    public void saveHistory(User currentUser, Order order) {
+        List<StockHistory> StockHistory = order.getOrderItems().getElements()
+                .stream()
+                .map(o -> StockAssembler.stockHistory(o, currentUser, MINUS))
+                .collect(Collectors.toList());
+
+        stockHistoryRepository.saveAll(StockHistory);
     }
 
     private List<Long> getProductIds(OrderSaveRequest request) {

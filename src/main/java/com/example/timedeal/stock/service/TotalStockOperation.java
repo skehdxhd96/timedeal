@@ -86,7 +86,25 @@ public class TotalStockOperation implements StockOperation{
 
     @Override
     public void decreaseAll(Order order) {
+        redisTemplate.execute(new SessionCallback() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                try {
+                    operations.multi();
+                    for (OrderItem orderItem : order.getOrderItems().getElements()) {
+                        Product product = orderItem.getProduct();
+                        String key = generateKey(product.getId());
+                        operations.watch(key);
+                        increase(orderItem);
+                    }
+                } catch(Exception e) {
+                    operations.discard();
+                    throw new IllegalStateException("주문 재고 감소 중 예외 발생");
+                }
 
+                return operations.exec();
+            }
+        });
     }
 
     @Override

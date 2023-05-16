@@ -30,46 +30,27 @@ public class Order extends baseEntity {
     private OrderItems orderItems;
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;
-    private int originalPrice;
     private int totalPrice;
-    private String etc;
+
+    // TODO : totalPrice
 
     @Builder
-    public Order(Long id, User orderedBy, OrderStatus orderStatus,
-                 int originalPrice, int totalPrice, String etc) {
+    public Order(Long id, User orderedBy, OrderStatus orderStatus, int totalPrice) {
         this.id = id;
         this.orderedBy = orderedBy;
         this.orderStatus = orderStatus;
-        this.originalPrice = originalPrice;
         this.totalPrice = totalPrice;
-        this.etc = etc;
     }
     public void addOrderItems(List<OrderItem> items) {
         orderItems.addAll(this, items);
+        setTotalPrice();
     }
 
-    public void add(Product product) {
-        OrderItem orderItem = OrderItem.builder()
-                .itemPrice(product.getProductPrice())
-                .order(this)
-                .product(product)
-//                .itemRealPrice()
-//                .publishEventId()
-                .build();
-
-        orderItems.add(orderItem);
-    }
-
-    public void remove(Product product) {
-        OrderItem orderItem = OrderItem.builder()
-                .itemPrice(product.getProductPrice())
-                .order(this)
-                .product(product)
-//                .itemRealPrice()
-//                .publishEventId()
-                .build();
-
-        orderItems.remove(orderItem);
+    public void setTotalPrice() {
+        this.totalPrice = this.getOrderItems().getElements()
+                .stream()
+                .mapToInt(OrderItem::getItemRealPrice)
+                .sum();
     }
 
     @Override

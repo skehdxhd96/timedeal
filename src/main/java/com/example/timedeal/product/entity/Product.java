@@ -36,12 +36,12 @@ public class Product extends baseEntity {
     private ProductStatus productStatus;
 
     private String productName;
-    private double productPrice;
+    private int productPrice;
     private String description;
     private int totalStockQuantity;
 
     @Builder
-    public Product(Long id, User createdBy, String productName, double productPrice, String description, int totalStockQuantity) {
+    public Product(Long id, User createdBy, String productName, int productPrice, String description, int totalStockQuantity) {
         this.id = id;
         this.createdBy = createdBy;
         this.productName = productName;
@@ -70,7 +70,6 @@ public class Product extends baseEntity {
         this.productName = product.getProductName();
         this.productPrice = product.getProductPrice();
         this.description = product.getDescription();
-        // 재고 수량 업데이트 쳐도 되나 ..?
     }
 
     @Override
