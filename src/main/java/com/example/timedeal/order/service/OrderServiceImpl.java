@@ -47,7 +47,8 @@ public class OrderServiceImpl implements OrderService{
                 .getElements()
                 .forEach(o -> o.validatedOnStock(stockService.getStockRemaining(o.getProduct())));
 
-        /* 재고 감소 */
+        /* 재고 감소 <락 걸고 진행해야 함.>*/
+        stockService.stockRollBackOnOrder(order);
 
 //        stockService.decrease(request.getProductId(), currentUser);
 
