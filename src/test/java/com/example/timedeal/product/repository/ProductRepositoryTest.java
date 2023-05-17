@@ -114,7 +114,7 @@ public class ProductRepositoryTest {
         productRepository.saveAllAndFlush(products);
 
         //when
-        productRepository.findAllProducts(PageRequest.of(0,2), new ProductSearchRequest("test", ))
+//        productRepository.findAllProducts(PageRequest.of(0,2), new ProductSearchRequest("test", ))
 
         //then
     }

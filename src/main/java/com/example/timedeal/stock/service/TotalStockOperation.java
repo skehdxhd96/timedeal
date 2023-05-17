@@ -60,7 +60,7 @@ public class TotalStockOperation implements StockOperation{
                         Product product = orderItem.getProduct();
                         String key = generateKey(product.getId());
                         operations.watch(key);
-                        decrease(orderItem);
+                        increase(orderItem);
                     }
                 } catch(Exception e) {
                     operations.discard();
@@ -95,7 +95,7 @@ public class TotalStockOperation implements StockOperation{
                         Product product = orderItem.getProduct();
                         String key = generateKey(product.getId());
                         operations.watch(key);
-                        increase(orderItem);
+                        decrease(orderItem);
                     }
                 } catch(Exception e) {
                     operations.discard();

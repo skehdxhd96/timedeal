@@ -22,6 +22,7 @@ import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.Consumer;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ import static com.example.timedeal.stock.entity.StockHistoryType.MINUS;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
@@ -50,10 +52,14 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.saveAndFlush(order);
 
         List<Product> products = findProductByIds(getProductIds(request));
-        products.forEach(Product::validatedInEvent);
+//        products.forEach(Product::validatedInEvent);
+
+        log.info("*** 주문지 생성 완료 ***");
 
         /* 주문지에 주문아이템 삽입 */
         order.addOrderItems(OrderAssembler.orderItems(products, request, order));
+
+        log.info("*** 주문 아이템 삽입 완료 ***");
 
         /* 재고 검사 */
         order.getOrderItems()
@@ -63,7 +69,11 @@ public class OrderServiceImpl implements OrderService{
         /* 재고 감소 <락 걸고 진행해야 함.>*/
         stockService.decreaseStockOnOrder(order);
 
+        log.info("*** 재고 감소 완료 ***");
+
         saveHistory(currentUser, order);
+
+        log.info("*** 주문 히스토리 저장 완료 ***");
 
         /* 주문 진행 */
         return OrderSelectResponse.of(order);

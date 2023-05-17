@@ -40,6 +40,7 @@ public class Order extends baseEntity {
         this.orderedBy = orderedBy;
         this.orderStatus = orderStatus;
         this.totalPrice = totalPrice;
+        this.orderItems = new OrderItems();
     }
     public void addOrderItems(List<OrderItem> items) {
         orderItems.addAll(this, items);
