@@ -14,4 +14,6 @@ public interface OrderService {
     List<OrderSelectResponse> findMyOrderList(User currentUser);
 
     List<UserSelectResponse> findOrderedList(Long productId);
+
+    OrderSelectResponse findOrderDetail(Long orderId, String orderStatus);
 }

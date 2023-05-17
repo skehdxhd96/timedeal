@@ -1,5 +1,7 @@
 package com.example.timedeal.order.service;
 
+import com.example.timedeal.common.exception.BusinessException;
+import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.order.dto.OrderAssembler;
 import com.example.timedeal.order.dto.OrderItemSaveRequest;
 import com.example.timedeal.order.dto.OrderSaveRequest;
@@ -17,6 +19,7 @@ import com.example.timedeal.stock.entity.StockHistoryType;
 import com.example.timedeal.stock.repository.StockHistoryRepository;
 import com.example.timedeal.stock.service.StockService;
 import com.example.timedeal.user.dto.UserSelectResponse;
+import com.example.timedeal.user.entity.Consumer;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -77,9 +80,21 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<UserSelectResponse> findOrderedList(Long productId) {
 
+        List<Order> orders = orderRepository.findOrderByProductId(productId);
 
+        return orders.stream()
+                .map(Order::getOrderedBy)
+                .map(UserSelectResponse::of)
+                .collect(Collectors.toList());
+    }
 
-        return null;
+    @Override
+    public OrderSelectResponse findOrderDetail(Long orderId, String orderStatus) {
+
+        Order order = orderRepository.findOrderByIdAndAndOrderStatus(orderId, orderStatus)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+
+        return OrderSelectResponse.of(order);
     }
 
     @Transactional

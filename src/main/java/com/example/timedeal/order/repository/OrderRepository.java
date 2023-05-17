@@ -7,11 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByOrderedBy(User orderedBy);
 
-    @Query("select o from Order o ")
-
+    @Query("select distinct o from OrderItem oi " +
+            "join fetch Order o " +
+            "join fetch User u " +
+            "where oi.product.id = :productId")
+    List<Order> findOrderByProductId(Long productId);
+    Optional<Order> findOrderByIdAndAndOrderStatus(Long orderId, String orderStatus);
 }

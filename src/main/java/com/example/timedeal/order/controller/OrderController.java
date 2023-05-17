@@ -33,6 +33,7 @@ public class OrderController {
     @LoginCheck(role = LoginCheck.Role.GENERAL)
     @GetMapping("/myOrderList")
     public ResponseEntity<List<OrderSelectResponse>> myOrderList(@CurrentUser User currentUser) {
+
         List<OrderSelectResponse> myOrderList = orderService.findMyOrderList(currentUser);
 
         return ResponseEntity.ok(myOrderList);
@@ -41,10 +42,20 @@ public class OrderController {
     @LoginCheck(role = LoginCheck.Role.ADMINISTRATOR)
     @GetMapping("/orderedList")
     public ResponseEntity<List<UserSelectResponse>> orderedList(@RequestParam Long productId) {
+
         List<UserSelectResponse> orderedList = orderService.findOrderedList(productId);
 
         return ResponseEntity.ok(orderedList);
     }
 
-    // TODO : 주문 상세 조회, 주문 리스트 조회 + 위 API에서 주문만 필요한가 전부 다 필요한가 ?
+    @LoginCheck(role = LoginCheck.Role.GENERAL)
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderSelectResponse> showOrderDetail(
+            @PathVariable Long orderId,
+            @RequestParam(required = false) String orderStatus
+    ) {
+        OrderSelectResponse orderDetail = orderService.findOrderDetail(orderId, orderStatus);
+
+        return ResponseEntity.ok(orderDetail);
+    }
 }
