@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public OrderSelectResponse findOrderDetail(Long orderId, String orderStatus) {
 
-        Order order = orderRepository.findOrderByIdAndAndOrderStatus(orderId, orderStatus)
+        Order order = orderRepository.findOrderByIdAndOrderStatus(orderId, OrderStatus.valueOf(orderStatus))
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         return OrderSelectResponse.of(order);
