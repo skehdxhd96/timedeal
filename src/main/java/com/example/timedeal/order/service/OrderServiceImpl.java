@@ -39,6 +39,8 @@ public class OrderServiceImpl implements OrderService{
     private final StockHistoryRepository stockHistoryRepository;
     private final StockService stockService;
 
+    // TODO : 주문 동시성 잘 되는건가 순서도 그려보기
+
     @Override
     @Transactional
     public OrderSelectResponse doOrder(OrderSaveRequest request, User currentUser) {

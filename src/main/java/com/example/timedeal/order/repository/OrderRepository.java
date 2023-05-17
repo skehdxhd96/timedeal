@@ -14,8 +14,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByOrderedBy(User orderedBy);
 
     @Query("select distinct o from OrderItem oi " +
-            "join fetch Order o " +
-            "join fetch User u " +
+            "left join Order o " +
+            "left join User u " +
             "where oi.product.id = :productId")
     List<Order> findOrderByProductId(Long productId);
     Optional<Order> findOrderByIdAndAndOrderStatus(Long orderId, String orderStatus);
