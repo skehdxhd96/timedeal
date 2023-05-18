@@ -22,7 +22,8 @@ public enum ErrorCode {
     ALREADY_IN_ORDER(500, "이미 주문목록에 있습니다.", "ALREADY_IN_ORDER"),
     NOT_IN_ORDER(500, "주문목록에 존재하지 않는 상품입니다.", "NOT_IN_ORDER"),
     STOCK_NOT_ENOUGH(500, "재고가 부족합니다.", "STOCK_NOT_ENOUGH"),
-    ORDER_NOT_FOUND(500, "주문이 존재하지 않습니다.", "ORDER_NOT_FOUND");
+    ORDER_NOT_FOUND(500, "주문이 존재하지 않습니다.", "ORDER_NOT_FOUND"),
+    CANNOT_GET_LOCK(500, "주문이 너무 많습니다. 잠시 후 다시 시도해 주세요", "CANNOT_GET_LOCK");
 
     private final int code;
     private final String message;

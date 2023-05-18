@@ -15,12 +15,12 @@ public class OrderItemSelectResponse {
     private int itemPrice;
     private int itemRealPrice;
     private int itemTotalPrice;
-    private long publishEventId;
+    private Long publishEventId;
     private int quantity;
 
     @Builder
     private OrderItemSelectResponse(long orderItemId, long productId, String productName, int itemPrice, int itemRealPrice,
-                                   int itemTotalPrice, long publishEventId, int quantity) {
+                                   int itemTotalPrice, Long publishEventId, int quantity) {
         this.orderItemId = orderItemId;
         this.productId = productId;
         this.productName = productName;

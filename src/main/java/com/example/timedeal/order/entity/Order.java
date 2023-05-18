@@ -50,7 +50,7 @@ public class Order extends baseEntity {
     public void setTotalPrice() {
         this.totalPrice = this.getOrderItems().getElements()
                 .stream()
-                .mapToInt(OrderItem::getItemRealPrice)
+                .mapToInt(o -> o.getItemRealPrice() * o.getQuantity())
                 .sum();
     }
 

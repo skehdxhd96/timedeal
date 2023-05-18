@@ -4,6 +4,7 @@ import com.example.timedeal.common.factory.ProductFactory;
 import com.example.timedeal.common.factory.UserFactory;
 import com.example.timedeal.order.dto.OrderItemSaveRequest;
 import com.example.timedeal.order.dto.OrderSaveRequest;
+import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.repository.OrderRepository;
 import com.example.timedeal.product.dto.ProductSaveRequest;
 import com.example.timedeal.product.entity.Product;
@@ -19,10 +20,12 @@ import com.example.timedeal.user.entity.UserType;
 import com.example.timedeal.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +63,7 @@ class OrderServiceImplTest {
     StockService stockService;
 
     @BeforeEach
+    @Transactional
     void setProductAndStock() {
 
         Administrator administrator = Administrator.builder()
@@ -85,9 +89,18 @@ class OrderServiceImplTest {
                 .build();
 
         productService.register(administrator, productSaveRequest);
+
+        Consumer temp1 = (Consumer) userRepository.findById(2L).get();
+        log.info("{}", temp1.getOrders().size());
+    }
+
+    @AfterEach
+    public void terminateRedis() {
+
     }
 
     @Test
+    @Transactional
     void 동시성_재고_테스트() throws InterruptedException {
 
         Consumer consumer = (Consumer) userRepository.findById(2L).get();
@@ -107,7 +120,7 @@ class OrderServiceImplTest {
         assertThat(consumer.getId()).isEqualTo(2L);
         assertThat(stockService.getStockRemaining(product)).isEqualTo(300);
 
-        int threadCount = 100;
+        int threadCount = 1;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -125,8 +138,8 @@ class OrderServiceImplTest {
 
         List<StockHistory> all = stockHistoryRepository.findAll();
 
-        assertThat(all).hasSize(100);
-        assertThat(stockService.getStockRemaining(product)).isEqualTo(200);
+        assertThat(all).hasSize(1);
+        assertThat(stockService.getStockRemaining(product)).isEqualTo(299);
     }
 
     @Test

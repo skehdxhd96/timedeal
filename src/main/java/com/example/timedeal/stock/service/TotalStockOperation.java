@@ -1,6 +1,8 @@
 package com.example.timedeal.stock.service;
 
+import com.example.timedeal.common.annotation.Retry;
 import com.example.timedeal.common.exception.BusinessException;
+import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.entity.OrderItem;
 import com.example.timedeal.product.entity.Product;
@@ -14,6 +16,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -25,11 +31,14 @@ public class TotalStockOperation implements StockOperation{
     private final RedisTemplate<String, String> redisTemplate;
     private final StockHistoryRepository stockHistoryRepository;
     private static final String TotalStockKey = "stock:total:%d";
+    private static final String LockKey = "Lock:%d";
 
     @Override
     public String generateKey(Long productId) {
         return String.format(TotalStockKey, productId);
     }
+
+    public String generateLockKey(Long productId) { return String.format(LockKey, productId);}
 
     @Override
     public void register(Product product) {
@@ -55,13 +64,16 @@ public class TotalStockOperation implements StockOperation{
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
                 try {
+                    List<String> keys = order.getOrderItems().getElements()
+                            .stream()
+                            .map(o -> o.getProduct().getId())
+                            .map(i -> generateKey(i))
+                            .collect(Collectors.toList());
+
+                    operations.watch(keys);
                     operations.multi();
-                    for (OrderItem orderItem : order.getOrderItems().getElements()) {
-                        Product product = orderItem.getProduct();
-                        String key = generateKey(product.getId());
-                        operations.watch(key);
-                        increase(orderItem);
-                    }
+
+                    for (OrderItem orderItem : order.getOrderItems().getElements()) increase(orderItem);
                 } catch(Exception e) {
                     operations.discard();
                     throw new IllegalStateException("재고 원복 중 예외 발생");
@@ -73,6 +85,7 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
+    @Retry
     public void decrease(OrderItem orderItem) {
 
         Product product = orderItem.getProduct();
@@ -86,19 +99,27 @@ public class TotalStockOperation implements StockOperation{
 
     @Override
     public void decreaseAll(Order order) {
-        redisTemplate.execute(new SessionCallback() {
+        redisTemplate.execute(new SessionCallback<Object>() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
                 try {
+
+                    List<String> keys = order.getOrderItems().getElements()
+                            .stream()
+                            .map(o -> o.getProduct().getId())
+                            .map(i -> generateKey(i))
+                            .collect(Collectors.toList());
+
+                    log.info("Redis Transaction 시작");
+
+                    operations.watch(keys);
                     operations.multi();
-                    for (OrderItem orderItem : order.getOrderItems().getElements()) {
-                        Product product = orderItem.getProduct();
-                        String key = generateKey(product.getId());
-                        operations.watch(key);
-                        decrease(orderItem);
-                    }
+
+                    for (OrderItem orderItem : order.getOrderItems().getElements()) decrease(orderItem);
+
                 } catch(Exception e) {
                     operations.discard();
+                    e.printStackTrace();
                     throw new IllegalStateException("주문 재고 감소 중 예외 발생");
                 }
 

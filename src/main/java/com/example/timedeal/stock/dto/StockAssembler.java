@@ -18,6 +18,7 @@ public class StockAssembler {
 
         return StockHistory.builder()
                 .consumerId(currentUser.getId())
+                .productId(orderItem.getProduct().getId())
                 .price(totalPrice)
                 .type(situation)
                 .orderId(orderItem.getOrder().getId())

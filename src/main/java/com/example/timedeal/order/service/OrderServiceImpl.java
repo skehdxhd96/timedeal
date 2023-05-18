@@ -73,8 +73,6 @@ public class OrderServiceImpl implements OrderService{
 
         saveHistory(currentUser, order);
 
-        log.info("*** 주문 히스토리 저장 완료 ***");
-
         /* 주문 진행 */
         return OrderSelectResponse.of(order);
     }
@@ -111,12 +109,17 @@ public class OrderServiceImpl implements OrderService{
 
     @Transactional
     public void saveHistory(User currentUser, Order order) {
+
+        log.info("*** 주문 히스토리 저장 시작 ***");
+
         List<StockHistory> StockHistory = order.getOrderItems().getElements()
                 .stream()
                 .map(o -> StockAssembler.stockHistory(o, currentUser, MINUS))
                 .collect(Collectors.toList());
 
         stockHistoryRepository.saveAll(StockHistory);
+
+        log.info("*** 주문 히스토리 저장 완료 ***");
     }
 
     private List<Long> getProductIds(OrderSaveRequest request) {

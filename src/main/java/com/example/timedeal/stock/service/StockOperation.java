@@ -13,6 +13,5 @@ public interface StockOperation {
     void increaseAll(Order order);
     void decrease(OrderItem orderItem);
     void decreaseAll(Order order);
-
     int getStockRemaining(Product product);
 }

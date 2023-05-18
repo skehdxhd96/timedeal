@@ -40,5 +40,5 @@ public class ExceptionController {
                 .body(new GlobalExceptionResponse(e.getCause(), e.getMessage()));
     }
 
-    // TODO : valid / user-admin / badrequest / NotFound
+    // TODO : valid / user-admin / badrequest / NotFound / RunTime
 }
