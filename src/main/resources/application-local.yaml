@@ -32,4 +32,4 @@ server:
 #  jdbc:h2:tcp://localhost/~/timedeallocal
 logging:
   level:
-    org.hibernate.sql: debug
+    org.hibernate.sql: info

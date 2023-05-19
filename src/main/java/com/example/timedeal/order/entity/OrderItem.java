@@ -27,7 +27,7 @@ public class OrderItem extends baseEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "product_id")
     private Product product;
     private int itemPrice;
@@ -67,5 +67,18 @@ public class OrderItem extends baseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(order, product);
+    }
+
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "id=" + id +
+                ", order=" + order +
+                ", product=" + product +
+                ", itemPrice=" + itemPrice +
+                ", publishEventId=" + publishEventId +
+                ", itemRealPrice=" + itemRealPrice +
+                ", quantity=" + quantity +
+                '}';
     }
 }

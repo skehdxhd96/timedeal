@@ -24,7 +24,7 @@ public class Order extends baseEntity {
     @Column(name = "order_id")
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "consumer_id")
+    @JoinColumn(name = "user_id")
     private User orderedBy;
     @Embedded
     private OrderItems orderItems;
@@ -65,5 +65,16 @@ public class Order extends baseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", orderedBy=" + orderedBy +
+                ", orderItems=" + orderItems +
+                ", orderStatus=" + orderStatus +
+                ", totalPrice=" + totalPrice +
+                '}';
     }
 }

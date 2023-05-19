@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,7 +64,6 @@ class OrderServiceImplTest {
     StockService stockService;
 
     @BeforeEach
-    @Transactional
     void setProductAndStock() {
 
         Administrator administrator = Administrator.builder()
@@ -90,25 +90,25 @@ class OrderServiceImplTest {
 
         productService.register(administrator, productSaveRequest);
 
-        Consumer temp1 = (Consumer) userRepository.findById(2L).get();
-        log.info("{}", temp1.getOrders().size());
-    }
+        Product product = productRepository.findById(1L).get();
 
-    @AfterEach
-    public void terminateRedis() {
-
+        assertThat(consumer.getId()).isEqualTo(2L);
+        assertThat(administrator.getId()).isEqualTo(1L);
+        assertThat(product.getId()).isEqualTo(1L);
     }
 
     @Test
+    @DisplayName("주문 테스트")
     @Transactional
-    void 동시성_재고_테스트() throws InterruptedException {
+    void 주문_테스트() throws InterruptedException {
 
         Consumer consumer = (Consumer) userRepository.findById(2L).get();
 
         OrderItemSaveRequest orderItemSaveRequest = OrderItemSaveRequest.builder()
                 .itemPrice(10000)
-                .quantity(1)
+                .quantity(3)
                 .productId(1L)
+                .publishEventId(null)
                 .build();
 
         OrderSaveRequest orderSaveRequest = new OrderSaveRequest();
@@ -120,21 +120,7 @@ class OrderServiceImplTest {
         assertThat(consumer.getId()).isEqualTo(2L);
         assertThat(stockService.getStockRemaining(product)).isEqualTo(300);
 
-        int threadCount = 1;
-        ExecutorService executorService = Executors.newFixedThreadPool(32);
-        CountDownLatch latch = new CountDownLatch(threadCount);
-
-        for(int i=0; i<threadCount; i++) {
-            executorService.submit(() -> {
-                try {
-                    orderService.doOrder(orderSaveRequest ,consumer);
-                } finally {
-                    latch.countDown();
-                }
-            });
-        }
-
-        latch.await();
+        orderService.doOrder(orderSaveRequest, consumer);
 
         List<StockHistory> all = stockHistoryRepository.findAll();
 

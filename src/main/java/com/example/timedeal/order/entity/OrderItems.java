@@ -2,7 +2,7 @@ package com.example.timedeal.order.entity;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
-import com.example.timedeal.product.entity.ProductEvent;
+
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
