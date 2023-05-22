@@ -4,11 +4,16 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Retry {
+public @interface DistributedLock {
+    String lockName();
 
-    int retryCount() default 10;
+    long waitTime();
 
+    long leaseTime();
+
+    TimeUnit unit() default TimeUnit.MILLISECONDS;
 }

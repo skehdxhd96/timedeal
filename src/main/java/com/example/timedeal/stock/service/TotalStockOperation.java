@@ -1,8 +1,5 @@
 package com.example.timedeal.stock.service;
 
-import com.example.timedeal.common.annotation.Retry;
-import com.example.timedeal.common.exception.BusinessException;
-import com.example.timedeal.common.exception.ErrorCode;
 import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.entity.OrderItem;
 import com.example.timedeal.product.entity.Product;
@@ -16,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,8 +33,6 @@ public class TotalStockOperation implements StockOperation{
     public String generateKey(Long productId) {
         return String.format(TotalStockKey, productId);
     }
-
-    public String generateLockKey(Long productId) { return String.format(LockKey, productId);}
 
     @Override
     public void register(Product product) {
@@ -85,7 +79,6 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
-    @Retry
     public void decrease(OrderItem orderItem) {
 
         Product product = orderItem.getProduct();
