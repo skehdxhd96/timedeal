@@ -4,6 +4,7 @@ import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.common.entity.baseEntity;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
+import com.example.timedeal.common.exception.NotEnoughStockException;
 import com.example.timedeal.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -52,10 +53,29 @@ public class Product extends baseEntity {
         this.totalStockQuantity = totalStockQuantity;
     }
 
+    public void soldOut() {
+        this.productStatus = ProductStatus.SOLD_OUT;
+    }
+
+    public void validated() {
+        validatedInEvent();
+        validatedOnSell();
+    }
+
     public void validatedInEvent() {
         if(this.productEvent != null) {
             this.productEvent.getPublishEvent().isInProgress();
             log.info("{} 상품의 이벤트 기간에 벗어남. 상품 아이디 : {}" , this.productName, this.id);
+        }
+    }
+
+    public void validatedOnSell() {
+        if(this.productStatus == ProductStatus.OFF) {
+            throw new IllegalStateException("판매중인 상품이 아닙니다.");
+        }
+
+        if(this.productStatus == ProductStatus.SOLD_OUT) {
+            throw new NotEnoughStockException("품절된 상품입니다.");
         }
     }
 
@@ -85,5 +105,19 @@ public class Product extends baseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", createdBy=" + createdBy +
+                ", productEvent=" + productEvent +
+                ", productStatus=" + productStatus +
+                ", productName='" + productName + '\'' +
+                ", productPrice=" + productPrice +
+                ", description='" + description + '\'' +
+                ", totalStockQuantity=" + totalStockQuantity +
+                '}';
     }
 }

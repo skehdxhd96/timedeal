@@ -42,6 +42,14 @@ public class Order extends baseEntity {
         this.totalPrice = totalPrice;
         this.orderItems = new OrderItems();
     }
+
+    public void success() {
+        this.orderStatus = OrderStatus.SUCCESS;
+    }
+
+    public void failed() {
+        this.orderStatus = OrderStatus.FAILED;
+    }
     public void addOrderItems(List<OrderItem> items) {
         orderItems.addAll(this, items);
         setTotalPrice();

@@ -115,19 +115,19 @@ class StockServiceTest {
                                             .product(product)
                                             .build());
 
+        stockoperation.register(product);
+
         assertThat(product.getTotalStockQuantity()).isEqualTo(100);
         assertThat(product.getId()).isEqualTo(1L);
 
-        int numberOfThreads = 10;
+        int numberOfThreads = 101;
         ExecutorService service = Executors.newFixedThreadPool(10);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
         for (int i = 0; i < numberOfThreads; i++) {
             service.submit(() -> {
                 try {
-                    log.info("thread : {} 감소 시작", Thread.currentThread());
                     stockService.decreaseStockOnOrder(order);
-                    log.info("thread : {} 감소 끝", Thread.currentThread());
                 } finally {
                     latch.countDown();
                 }
@@ -135,7 +135,6 @@ class StockServiceTest {
         }
         latch.await();
 
-        assertThat(stockService.getStockRemaining(product)).isEqualTo(90);
+        assertThat(stockService.getStockRemaining(product)).isEqualTo(0);
     }
-
 }

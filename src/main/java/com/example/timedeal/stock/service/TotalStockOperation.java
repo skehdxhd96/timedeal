@@ -1,20 +1,16 @@
 package com.example.timedeal.stock.service;
 
+import com.example.timedeal.common.annotation.DistributedLock;
+import com.example.timedeal.common.exception.NotEnoughStockException;
 import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.entity.OrderItem;
 import com.example.timedeal.product.entity.Product;
-import com.example.timedeal.stock.entity.StockHistory;
-import com.example.timedeal.stock.repository.StockHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -25,9 +21,8 @@ public class TotalStockOperation implements StockOperation{
      * Redis Stock = <StockKey : 남은 재고 양>
      */
     private final RedisTemplate<String, String> redisTemplate;
-    private final StockHistoryRepository stockHistoryRepository;
+    private final StockHistoryService stockHistoryService;
     private static final String TotalStockKey = "stock:total:%d";
-    private static final String LockKey = "Lock:%d";
 
     @Override
     public String generateKey(Long productId) {
@@ -36,8 +31,11 @@ public class TotalStockOperation implements StockOperation{
 
     @Override
     public void register(Product product) {
+
         String key = generateKey(product.getId());
-        redisTemplate.opsForValue().set(key, String.valueOf(product.getTotalStockQuantity()));
+        redisTemplate.opsForValue().setIfAbsent(key, String.valueOf(product.getTotalStockQuantity()));
+
+        log.info("Redis에 상품 {} 재고 데이터 적재. 현재 재고 : {}", product.getId(), redisTemplate.opsForValue().get(key));
     }
 
     @Override
@@ -53,33 +51,21 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
+    @DistributedLock(lockName = "stock_lock", waitTime = 3000, leaseTime = 3000, unit = TimeUnit.MILLISECONDS)
     public void increaseAll(Order order) {
-        redisTemplate.execute(new SessionCallback() {
-            @Override
-            public Object execute(RedisOperations operations) throws DataAccessException {
-                try {
-                    List<String> keys = order.getOrderItems().getElements()
-                            .stream()
-                            .map(o -> o.getProduct().getId())
-                            .map(i -> generateKey(i))
-                            .collect(Collectors.toList());
+        log.info("order : {}", order);
 
-                    operations.watch(keys);
-                    operations.multi();
+        for (OrderItem orderitem : order.getOrderItems().getElements()) log.info("해당 주문의 orderItem : {}", orderitem);
 
-                    for (OrderItem orderItem : order.getOrderItems().getElements()) increase(orderItem);
-                } catch(Exception e) {
-                    operations.discard();
-                    throw new IllegalStateException("재고 원복 중 예외 발생");
-                }
-
-                return operations.exec();
-            }
-        });
+        order.getOrderItems()
+                .getElements()
+                .forEach(this::increase);
     }
 
     @Override
     public void decrease(OrderItem orderItem) {
+
+        log.info("{}의 {} 재고 감소 시작. 현재 재고 : {}", Thread.currentThread(), orderItem.getProduct().getId(), redisTemplate.opsForValue().get(generateKey(orderItem.getProduct().getId())));
 
         Product product = orderItem.getProduct();
 
@@ -87,38 +73,30 @@ public class TotalStockOperation implements StockOperation{
 
         int stockRemaining = getStockRemaining(product) - orderItem.getQuantity();
 
+        if(stockRemaining == 0) {orderItem.getProduct().soldOut();}
+
+        log.info("현재 스레드 : {}, 상품번호 : {} , 현재 재고 : {}", Thread.currentThread(), product.getId(), stockRemaining);
+
         redisTemplate.opsForValue().set(key, String.valueOf(stockRemaining));
+
+        log.info("{}의 {} 재고 감소 끝", Thread.currentThread(), orderItem.getProduct().getId());
     }
 
     @Override
+    @DistributedLock(lockName = "stock_lock", waitTime = 3000, leaseTime = 3000, unit = TimeUnit.MILLISECONDS)
     public void decreaseAll(Order order) {
-        redisTemplate.execute(new SessionCallback<Object>() {
-            @Override
-            public Object execute(RedisOperations operations) throws DataAccessException {
-                try {
-
-                    List<String> keys = order.getOrderItems().getElements()
-                            .stream()
-                            .map(o -> o.getProduct().getId())
-                            .map(i -> generateKey(i))
-                            .collect(Collectors.toList());
-
-                    log.info("Redis Transaction 시작");
-
-                    operations.watch(keys);
-                    operations.multi();
-
-                    for (OrderItem orderItem : order.getOrderItems().getElements()) decrease(orderItem);
-
-                } catch(Exception e) {
-                    operations.discard();
-                    e.printStackTrace();
-                    throw new IllegalStateException("주문 재고 감소 중 예외 발생");
-                }
-
-                return operations.exec();
-            }
-        });
+        try {
+            order.getOrderItems()
+                    .getElements().stream()
+                    .peek(o -> o.validatedOnStock(getStockRemaining(o.getProduct())))
+                    .forEach(this::decrease);
+        } catch(NotEnoughStockException e) {
+            // 재고 부족 예외의 경우, 재고 원복은 없으며 History 저장하지 않는다.
+            // noRollBackFor 설정에 의해 order.failed()까지는 실행되며, 이후 history 저장을 막기 위해 IllegalStateException을 던진다.
+            log.error(e.getMessage());
+            order.failed();
+            throw new IllegalStateException("재고가 부족합니다.");
+        }
     }
 
     @Override
@@ -127,6 +105,8 @@ public class TotalStockOperation implements StockOperation{
         String key = generateKey(product.getId());
 
         String remaining = redisTemplate.opsForValue().get(key);
+
+        log.info("{} 상품 Redis 조회 시작. 현재 재고 : {}", product, remaining);
 
         if(remaining == null)
             return getStockRemainingIfNotExistInRedis(product);
@@ -139,11 +119,9 @@ public class TotalStockOperation implements StockOperation{
 
         String key = generateKey(product.getId());
 
-        int usedStock = stockHistoryRepository
-                        .findByProductId(product.getId())
-                        .stream()
-                        .mapToInt(StockHistory::getQuantity)
-                        .sum();
+        log.info("재고 Redis에 없음. RDB 조회 시작. Redis 결과 : {}" , redisTemplate.opsForValue().get(key));
+
+        int usedStock = stockHistoryService.getUsedStock(product);
 
         int remaining = product.getTotalStockQuantity() - usedStock;
 

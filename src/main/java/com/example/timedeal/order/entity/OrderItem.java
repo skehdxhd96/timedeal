@@ -3,12 +3,14 @@ package com.example.timedeal.order.entity;
 import com.example.timedeal.common.entity.baseEntity;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
+import com.example.timedeal.common.exception.NotEnoughStockException;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.entity.ProductEvent;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -17,6 +19,7 @@ import java.util.Objects;
 @Table(name = "order_item")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Slf4j
 public class OrderItem extends baseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,8 +54,11 @@ public class OrderItem extends baseEntity {
     }
 
     public void validatedOnStock(int remaining) {
+
+        this.product.validatedOnSell();
+
         if(this.getQuantity() > remaining) {
-            throw new BusinessException(ErrorCode.STOCK_NOT_ENOUGH);
+            throw new NotEnoughStockException("재고가 부족합니다.");
         }
     }
 

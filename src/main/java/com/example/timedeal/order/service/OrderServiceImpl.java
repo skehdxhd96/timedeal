@@ -2,6 +2,7 @@ package com.example.timedeal.order.service;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
+import com.example.timedeal.common.exception.NotEnoughStockException;
 import com.example.timedeal.order.dto.OrderAssembler;
 import com.example.timedeal.order.dto.OrderItemSaveRequest;
 import com.example.timedeal.order.dto.OrderSaveRequest;
@@ -17,6 +18,7 @@ import com.example.timedeal.stock.dto.StockAssembler;
 import com.example.timedeal.stock.entity.StockHistory;
 import com.example.timedeal.stock.entity.StockHistoryType;
 import com.example.timedeal.stock.repository.StockHistoryRepository;
+import com.example.timedeal.stock.service.StockHistoryService;
 import com.example.timedeal.stock.service.StockService;
 import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.Consumer;
@@ -38,13 +40,13 @@ public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final StockHistoryRepository stockHistoryRepository;
+    private final StockHistoryService stockHistoryService;
     private final StockService stockService;
 
     // TODO : 주문 동시성 잘 되는건가 순서도 그려보기
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = {NotEnoughStockException.class})
     public OrderSelectResponse doOrder(OrderSaveRequest request, User currentUser) {
 
         // 빈 주문지 생성
@@ -52,26 +54,15 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.saveAndFlush(order);
 
         List<Product> products = findProductByIds(getProductIds(request));
-//        products.forEach(Product::validatedInEvent);
-
-        log.info("*** 주문지 생성 완료 ***");
+        products.forEach(Product::validated);
 
         /* 주문지에 주문아이템 삽입 */
         order.addOrderItems(OrderAssembler.orderItems(products, request, order));
 
-        log.info("*** 주문 아이템 삽입 완료 ***");
-
-        /* 재고 검사 */
-        order.getOrderItems()
-                .getElements()
-                .forEach(o -> o.validatedOnStock(stockService.getStockRemaining(o.getProduct())));
-
         /* 재고 감소 <락 걸고 진행해야 함.>*/
         stockService.decreaseStockOnOrder(order);
 
-        log.info("*** 재고 감소 완료 ***");
-
-        saveHistory(currentUser, order);
+        stockHistoryService.saveHistory(currentUser, order, MINUS);
 
         /* 주문 진행 */
         return OrderSelectResponse.of(order);
@@ -105,21 +96,6 @@ public class OrderServiceImpl implements OrderService{
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
         return OrderSelectResponse.of(order);
-    }
-
-    @Transactional
-    public void saveHistory(User currentUser, Order order) {
-
-        log.info("*** 주문 히스토리 저장 시작 ***");
-
-        List<StockHistory> StockHistory = order.getOrderItems().getElements()
-                .stream()
-                .map(o -> StockAssembler.stockHistory(o, currentUser, MINUS))
-                .collect(Collectors.toList());
-
-        stockHistoryRepository.saveAll(StockHistory);
-
-        log.info("*** 주문 히스토리 저장 완료 ***");
     }
 
     private List<Long> getProductIds(OrderSaveRequest request) {

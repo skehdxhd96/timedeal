@@ -18,7 +18,7 @@ public class DistributedLockAspect {
 
     private final RedissonClient redissonClient;
 
-    @Around("@annotation(DistributedLock)")
+    @Around("@annotation(distributedLock)")
     public Object lock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws Throwable{
 
         RLock lock = redissonClient.getLock(distributedLock.lockName());
@@ -29,9 +29,11 @@ public class DistributedLockAspect {
                 throw new IllegalStateException("Lock 획득 실패");
             }
 
+            log.info("thread : {} signature : {} 락 획득 성공", Thread.currentThread(), joinPoint.getSignature());
             return joinPoint.proceed();
         } finally {
             if(lock.isLocked() && lock.isHeldByCurrentThread()) lock.unlock();
+            log.info("thread : {} signature : {} 락 반납 완료", Thread.currentThread(), joinPoint.getSignature());
         }
     }
 }
