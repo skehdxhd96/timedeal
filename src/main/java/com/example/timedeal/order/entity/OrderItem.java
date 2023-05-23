@@ -1,11 +1,8 @@
 package com.example.timedeal.order.entity;
 
 import com.example.timedeal.common.entity.baseEntity;
-import com.example.timedeal.common.exception.BusinessException;
-import com.example.timedeal.common.exception.ErrorCode;
-import com.example.timedeal.common.exception.NotEnoughStockException;
+import com.example.timedeal.common.exception.StockException;
 import com.example.timedeal.product.entity.Product;
-import com.example.timedeal.product.entity.ProductEvent;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,7 +55,7 @@ public class OrderItem extends baseEntity {
         this.product.validatedOnSell();
 
         if(this.getQuantity() > remaining) {
-            throw new NotEnoughStockException("재고가 부족합니다.");
+            throw new StockException("재고가 부족합니다.");
         }
     }
 

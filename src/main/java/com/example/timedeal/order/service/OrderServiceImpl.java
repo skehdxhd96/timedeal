@@ -2,26 +2,19 @@ package com.example.timedeal.order.service;
 
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
-import com.example.timedeal.common.exception.NotEnoughStockException;
+import com.example.timedeal.common.exception.StockException;
 import com.example.timedeal.order.dto.OrderAssembler;
 import com.example.timedeal.order.dto.OrderItemSaveRequest;
 import com.example.timedeal.order.dto.OrderSaveRequest;
 import com.example.timedeal.order.dto.OrderSelectResponse;
 import com.example.timedeal.order.entity.Order;
-import com.example.timedeal.order.entity.OrderItem;
-import com.example.timedeal.order.entity.OrderItems;
 import com.example.timedeal.order.entity.OrderStatus;
 import com.example.timedeal.order.repository.OrderRepository;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.repository.ProductRepository;
-import com.example.timedeal.stock.dto.StockAssembler;
-import com.example.timedeal.stock.entity.StockHistory;
-import com.example.timedeal.stock.entity.StockHistoryType;
-import com.example.timedeal.stock.repository.StockHistoryRepository;
 import com.example.timedeal.stock.service.StockHistoryService;
 import com.example.timedeal.stock.service.StockService;
 import com.example.timedeal.user.dto.UserSelectResponse;
-import com.example.timedeal.user.entity.Consumer;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,18 +36,15 @@ public class OrderServiceImpl implements OrderService{
     private final StockHistoryService stockHistoryService;
     private final StockService stockService;
 
-    // TODO : 주문 동시성 잘 되는건가 순서도 그려보기
-
     @Override
-    @Transactional(noRollbackFor = {NotEnoughStockException.class})
+    @Transactional(noRollbackFor = {StockException.class})
     public OrderSelectResponse doOrder(OrderSaveRequest request, User currentUser) {
 
         // 빈 주문지 생성
         Order order = createEmptyOrder(currentUser);
-        orderRepository.saveAndFlush(order);
 
         List<Product> products = findProductByIds(getProductIds(request));
-        products.forEach(Product::validated);
+//        products.forEach(Product::validated);
 
         /* 주문지에 주문아이템 삽입 */
         order.addOrderItems(OrderAssembler.orderItems(products, request, order));
@@ -105,13 +95,14 @@ public class OrderServiceImpl implements OrderService{
                                         .collect(Collectors.toList());
     }
 
+    @Transactional
     public Order createEmptyOrder(User currentUser) {
         Order order = Order.builder()
                 .orderedBy(currentUser)
                 .orderStatus(OrderStatus.WAIT)
                 .build();
 
-        return orderRepository.save(order);
+        return orderRepository.saveAndFlush(order);
     }
 
     private List<Product> findProductByIds(List<Long> productIds) {

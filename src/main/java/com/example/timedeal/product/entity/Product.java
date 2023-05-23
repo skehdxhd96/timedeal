@@ -1,10 +1,9 @@
 package com.example.timedeal.product.entity;
 
-import com.example.timedeal.Event.entity.PublishEvent;
 import com.example.timedeal.common.entity.baseEntity;
 import com.example.timedeal.common.exception.BusinessException;
 import com.example.timedeal.common.exception.ErrorCode;
-import com.example.timedeal.common.exception.NotEnoughStockException;
+import com.example.timedeal.common.exception.StockException;
 import com.example.timedeal.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -71,11 +70,11 @@ public class Product extends baseEntity {
 
     public void validatedOnSell() {
         if(this.productStatus == ProductStatus.OFF) {
-            throw new IllegalStateException("판매중인 상품이 아닙니다.");
+            throw new StockException("판매중인 상품이 아닙니다.");
         }
 
         if(this.productStatus == ProductStatus.SOLD_OUT) {
-            throw new NotEnoughStockException("품절된 상품입니다.");
+            throw new StockException("품절된 상품입니다.");
         }
     }
 

@@ -98,15 +98,15 @@ class OrderServiceImplTest {
     }
 
     @Test
-    @DisplayName("주문 테스트")
+    @DisplayName("동시 주문 테스트")
     @Transactional
-    void 주문_테스트() throws InterruptedException {
+    void 동시_주문_테스트() throws InterruptedException {
 
         Consumer consumer = (Consumer) userRepository.findById(2L).get();
 
         OrderItemSaveRequest orderItemSaveRequest = OrderItemSaveRequest.builder()
                 .itemPrice(10000)
-                .quantity(3)
+                .quantity(30)
                 .productId(1L)
                 .publishEventId(null)
                 .build();
@@ -120,12 +120,27 @@ class OrderServiceImplTest {
         assertThat(consumer.getId()).isEqualTo(2L);
         assertThat(stockService.getStockRemaining(product)).isEqualTo(300);
 
-        orderService.doOrder(orderSaveRequest, consumer);
+        int numberOfThreads = 10;
+        ExecutorService service = Executors.newFixedThreadPool(32);
+        CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
-        List<StockHistory> all = stockHistoryRepository.findAll();
+        for (int i = 0; i < numberOfThreads; i++) {
+            service.submit(() -> {
+                try {
+                    orderService.doOrder(orderSaveRequest, consumer);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
 
-        assertThat(all).hasSize(1);
-        assertThat(stockService.getStockRemaining(product)).isEqualTo(299);
+        List<StockHistory> allOrderHistory = stockHistoryRepository.findAll();
+        List<Order> allOrder = orderRepository.findAll();
+
+        assertThat(allOrder).hasSize(10);
+        assertThat(allOrderHistory).hasSize(10);
+        assertThat(stockService.getStockRemaining(product)).isEqualTo(0);
     }
 
     @Test

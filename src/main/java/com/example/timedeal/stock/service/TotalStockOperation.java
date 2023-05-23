@@ -1,7 +1,7 @@
 package com.example.timedeal.stock.service;
 
 import com.example.timedeal.common.annotation.DistributedLock;
-import com.example.timedeal.common.exception.NotEnoughStockException;
+import com.example.timedeal.common.exception.StockException;
 import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.entity.OrderItem;
 import com.example.timedeal.product.entity.Product;
@@ -23,6 +23,7 @@ public class TotalStockOperation implements StockOperation{
     private final RedisTemplate<String, String> redisTemplate;
     private final StockHistoryService stockHistoryService;
     private static final String TotalStockKey = "stock:total:%d";
+    private static final int SOLD_OUT = 0;
 
     @Override
     public String generateKey(Long productId) {
@@ -73,7 +74,7 @@ public class TotalStockOperation implements StockOperation{
 
         int stockRemaining = getStockRemaining(product) - orderItem.getQuantity();
 
-        if(stockRemaining == 0) {orderItem.getProduct().soldOut();}
+        if(stockRemaining == SOLD_OUT) {product.soldOut();}
 
         log.info("현재 스레드 : {}, 상품번호 : {} , 현재 재고 : {}", Thread.currentThread(), product.getId(), stockRemaining);
 
@@ -90,12 +91,19 @@ public class TotalStockOperation implements StockOperation{
                     .getElements().stream()
                     .peek(o -> o.validatedOnStock(getStockRemaining(o.getProduct())))
                     .forEach(this::decrease);
-        } catch(NotEnoughStockException e) {
+
+            log.info("재고 감소 성공");
+        } catch(StockException e) {
             // 재고 부족 예외의 경우, 재고 원복은 없으며 History 저장하지 않는다.
             // noRollBackFor 설정에 의해 order.failed()까지는 실행되며, 이후 history 저장을 막기 위해 IllegalStateException을 던진다.
+            // TODO: order.failed까지 되는지 확인해야함.
+            log.info("재고 감소 실패");
             log.error(e.getMessage());
             order.failed();
-            throw new IllegalStateException("재고가 부족합니다.");
+        } catch(Exception e) {
+            log.info("재고 감소 실패");
+            log.error(e.getMessage());
+            increaseAll(order);
         }
     }
 
