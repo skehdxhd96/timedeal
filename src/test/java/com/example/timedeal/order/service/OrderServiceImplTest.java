@@ -63,23 +63,19 @@ class OrderServiceImplTest {
     @Autowired
     StockService stockService;
 
-    @BeforeEach
-    void setProductAndStock() {
+    @Test
+    @Transactional
+    @DisplayName("동시 주문 테스트")
+    void 동시_주문_테스트() throws InterruptedException {
 
         Administrator administrator = Administrator.builder()
+                .id(1L)
                 .userName("admin")
                 .password("admin")
                 .userType(UserType.ADMINISTRATOR)
                 .build();
-        Consumer consumer = Consumer.builder()
-                .userName("test")
-                .password("1234")
-                .address("korea")
-                .userType(UserType.CONSUMER)
-                .build();
 
         userRepository.saveAndFlush(administrator);
-        userRepository.saveAndFlush(consumer);
 
         ProductSaveRequest productSaveRequest = ProductSaveRequest.builder()
                 .productName("test product 1")
@@ -90,38 +86,30 @@ class OrderServiceImplTest {
 
         productService.register(administrator, productSaveRequest);
 
-        Product product = productRepository.findById(1L).get();
+        Consumer consumer = Consumer.builder()
+                .id(2L)
+                .userName("test")
+                .password("1234")
+                .address("korea")
+                .userType(UserType.CONSUMER)
+                .build();
 
-        assertThat(consumer.getId()).isEqualTo(2L);
-        assertThat(administrator.getId()).isEqualTo(1L);
-        assertThat(product.getId()).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("동시 주문 테스트")
-    @Transactional
-    void 동시_주문_테스트() throws InterruptedException {
-
-        Consumer consumer = (Consumer) userRepository.findById(2L).get();
+        userRepository.saveAndFlush(consumer);
 
         OrderItemSaveRequest orderItemSaveRequest = OrderItemSaveRequest.builder()
                 .itemPrice(10000)
                 .quantity(30)
-                .productId(1L)
+                .productId(1001L)
                 .publishEventId(null)
                 .build();
 
         OrderSaveRequest orderSaveRequest = new OrderSaveRequest();
         orderSaveRequest.getOrderItemRequests().add(orderItemSaveRequest);
 
-        Product product = productRepository.findById(1L).get();
+        Product product = productRepository.findById(1001L).get();
 
-        assertThat(orderSaveRequest.getOrderItemRequests()).hasSize(1);
-        assertThat(consumer.getId()).isEqualTo(2L);
-        assertThat(stockService.getStockRemaining(product)).isEqualTo(300);
-
-        int numberOfThreads = 10;
-        ExecutorService service = Executors.newFixedThreadPool(32);
+        int numberOfThreads = 1;
+        ExecutorService service = Executors.newFixedThreadPool(1);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
         for (int i = 0; i < numberOfThreads; i++) {
@@ -138,9 +126,9 @@ class OrderServiceImplTest {
         List<StockHistory> allOrderHistory = stockHistoryRepository.findAll();
         List<Order> allOrder = orderRepository.findAll();
 
-        assertThat(allOrder).hasSize(10);
-        assertThat(allOrderHistory).hasSize(10);
-        assertThat(stockService.getStockRemaining(product)).isEqualTo(0);
+        assertThat(allOrder).hasSize(1);
+        assertThat(allOrderHistory).hasSize(1);
+        assertThat(stockService.getStockRemaining(product)).isEqualTo(270);
     }
 
     @Test

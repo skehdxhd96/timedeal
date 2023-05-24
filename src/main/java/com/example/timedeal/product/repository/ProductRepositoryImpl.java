@@ -70,17 +70,6 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
         return PageableExecutionUtils.getPage(products, pageable, () -> count);
     }
 
-    @Override
-    public List<Product> findProductDetailByProductIds(List<Long> productIds) {
-        return queryFactory
-                .select(product)
-                .from(product)
-                .leftJoin(product.productEvent, productEvent).fetchJoin()
-                .leftJoin(productEvent.publishEvent, publishEvent).fetchJoin()
-                .where(product.id.in(productIds))
-                .fetch();
-    }
-
     private BooleanExpression eqProductName(String searchKeyword) {
 
         if(StringUtils.isBlank(searchKeyword)) {

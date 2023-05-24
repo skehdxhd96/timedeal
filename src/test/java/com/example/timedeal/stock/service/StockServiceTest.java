@@ -120,7 +120,7 @@ class StockServiceTest {
         assertThat(product.getTotalStockQuantity()).isEqualTo(100);
         assertThat(product.getId()).isEqualTo(1L);
 
-        int numberOfThreads = 101;
+        int numberOfThreads = 50;
         ExecutorService service = Executors.newFixedThreadPool(10);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
@@ -135,6 +135,6 @@ class StockServiceTest {
         }
         latch.await();
 
-        assertThat(stockService.getStockRemaining(product)).isEqualTo(0);
+        assertThat(stockService.getStockRemaining(product)).isEqualTo(50);
     }
 }

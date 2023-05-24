@@ -8,10 +8,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
 import java.util.Objects;
-
 @Entity
 @Table(name = "order_item")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,7 +21,15 @@ import java.util.Objects;
 @Slf4j
 public class OrderItem extends baseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
+    @GenericGenerator(
+            name = "message-id-generator",
+            strategy = "sequence",
+            parameters = {@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
+                    @Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
+                    @Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
+    )
     @Column(name = "order_item_id")
     private Long id;
 

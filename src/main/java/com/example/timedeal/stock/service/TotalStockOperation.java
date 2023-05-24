@@ -92,18 +92,14 @@ public class TotalStockOperation implements StockOperation{
                     .peek(o -> o.validatedOnStock(getStockRemaining(o.getProduct())))
                     .forEach(this::decrease);
 
+            order.success();
+
             log.info("재고 감소 성공");
         } catch(StockException e) {
-            // 재고 부족 예외의 경우, 재고 원복은 없으며 History 저장하지 않는다.
-            // noRollBackFor 설정에 의해 order.failed()까지는 실행되며, 이후 history 저장을 막기 위해 IllegalStateException을 던진다.
             // TODO: order.failed까지 되는지 확인해야함.
             log.info("재고 감소 실패");
             log.error(e.getMessage());
             order.failed();
-        } catch(Exception e) {
-            log.info("재고 감소 실패");
-            log.error(e.getMessage());
-            increaseAll(order);
         }
     }
 

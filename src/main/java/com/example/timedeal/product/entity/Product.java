@@ -10,6 +10,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -21,12 +24,19 @@ import java.util.Objects;
 @Slf4j
 public class Product extends baseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
+    @GenericGenerator(
+            name = "message-id-generator",
+            strategy = "sequence",
+            parameters = {@org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
+                    @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
+                    @org.hibernate.annotations.Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
+    )
     @Column(name = "product_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "administrator_id")
+    @JoinColumn(name = "user_id")
     private User createdBy;
 
     @OneToOne(mappedBy = "product")

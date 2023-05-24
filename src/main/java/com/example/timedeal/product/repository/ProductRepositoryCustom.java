@@ -12,6 +12,4 @@ public interface ProductRepositoryCustom {
     Page<Product> findAllProductOnEvent(Pageable pageable, String eventCode);
 
     Page<Product> findAllProducts(Pageable pageable, ProductSearchRequest productSearchRequest);
-
-    List<Product> findProductDetailByProductIds(List<Long> productIds);
 }

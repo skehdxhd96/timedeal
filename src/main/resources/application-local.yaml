@@ -11,6 +11,10 @@ spring:
     password: 1234
 #    driver-class-name: org.h2.Driver
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 19
+      idle-timeout: 100
+      max-lifetime: 100
   redis:
     host: localhost
     port: 6379
@@ -36,4 +40,8 @@ server:
 #  jdbc:h2:tcp://localhost/~/timedeallocal
 logging:
   level:
-    org.hibernate.sql: info
+    org.hibernate.type.descriptor.sql: trace
+    org.hibernate.sql: INFO
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
+

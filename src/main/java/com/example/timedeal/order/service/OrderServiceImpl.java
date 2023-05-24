@@ -53,8 +53,8 @@ public class OrderServiceImpl implements OrderService{
         stockService.decreaseStockOnOrder(order);
 
         stockHistoryService.saveHistory(currentUser, order, MINUS);
-
         /* 주문 진행 */
+
         return OrderSelectResponse.of(order);
     }
 
@@ -95,14 +95,13 @@ public class OrderServiceImpl implements OrderService{
                                         .collect(Collectors.toList());
     }
 
-    @Transactional
     public Order createEmptyOrder(User currentUser) {
         Order order = Order.builder()
                 .orderedBy(currentUser)
                 .orderStatus(OrderStatus.WAIT)
                 .build();
 
-        return orderRepository.saveAndFlush(order);
+        return orderRepository.save(order);
     }
 
     private List<Product> findProductByIds(List<Long> productIds) {

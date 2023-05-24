@@ -32,8 +32,22 @@ public class StockService {
     @Transactional
     public void decreaseStockOnOrder(Order order) {
 
+        rollBackStockOnOrder(order);
         /* 재고 감소 */
         stockOperation.decreaseAll(order);
+    }
+
+    public void rollBackStockOnOrder(Order order) {
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                if(status == STATUS_ROLLED_BACK) {
+                    order.failed();
+                    stockOperation.increaseAll(order);
+                }
+            }
+        });
     }
 
     // 상품의 재고를 가져온다.

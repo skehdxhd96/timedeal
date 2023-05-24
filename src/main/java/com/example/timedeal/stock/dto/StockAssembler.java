@@ -19,6 +19,7 @@ public class StockAssembler {
                 .consumerId(currentUser.getId())
                 .productId(orderItem.getProduct().getId())
                 .price(totalPrice)
+                .orderStatus(orderItem.getOrder().getOrderStatus())
                 .type(situation)
                 .orderId(orderItem.getOrder().getId())
                 .quantity(orderItem.getQuantity())

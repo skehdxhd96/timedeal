@@ -96,6 +96,6 @@ public class DataInitRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        initAdmin();
+        System.out.println("Hello, Timedeal");
     }
 }

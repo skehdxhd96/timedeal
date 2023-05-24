@@ -1,6 +1,7 @@
 package com.example.timedeal.stock.service;
 
 import com.example.timedeal.order.entity.Order;
+import com.example.timedeal.order.entity.OrderStatus;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.stock.dto.StockAssembler;
 import com.example.timedeal.stock.entity.StockHistory;
@@ -39,7 +40,7 @@ public class StockHistoryService {
 
     public int getUsedStock(Product product) {
         return stockHistoryRepository
-                .findByProductId(product.getId())
+                .findByProductIdAndOrderStatus(product.getId(), OrderStatus.SUCCESS)
                 .stream()
                 .mapToInt(StockHistory::getQuantity)
                 .sum();
