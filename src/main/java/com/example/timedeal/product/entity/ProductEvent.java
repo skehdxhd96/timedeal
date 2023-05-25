@@ -23,14 +23,16 @@ public class ProductEvent extends baseEntity {
 
     // TODO : 굳이 엔티티 정보들을 갖고있을 필요가 없음. 연관관계를 끊고 id만 갖고 있어도 될 것 같다.
 
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
-    @GenericGenerator(
-            name = "message-id-generator",
-            strategy = "sequence",
-            parameters = {@org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
-                    @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
-                    @org.hibernate.annotations.Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
-    )
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
+//    @GenericGenerator(
+//            name = "message-id-generator",
+//            strategy = "sequence",
+//            parameters = {@org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
+//                    @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
+//                    @org.hibernate.annotations.Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
+//    )
     @Column(name = "product_event_id")
     private Long id;
 

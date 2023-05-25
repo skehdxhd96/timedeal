@@ -38,6 +38,7 @@ public class StockHistoryService {
         log.info("*** 주문 히스토리 저장 완료 ***");
     }
 
+    @Transactional(readOnly = true)
     public int getUsedStock(Product product) {
         return stockHistoryRepository
                 .findByProductIdAndOrderStatus(product.getId(), OrderStatus.SUCCESS)

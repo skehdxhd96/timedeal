@@ -36,6 +36,9 @@ public class OrderAssembler {
     }
 
     public static List<OrderItem> orderItems(List<Product> products, OrderSaveRequest request, Order order) {
+
+        // TODO : productId Validation
+
         return products.stream()
                 .map(p -> orderItem(p, request, order))
                 .collect(Collectors.toList());

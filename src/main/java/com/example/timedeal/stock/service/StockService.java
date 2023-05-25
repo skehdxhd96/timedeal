@@ -26,7 +26,6 @@ import static com.example.timedeal.stock.entity.StockHistoryType.MINUS;
 @RequiredArgsConstructor
 public class StockService {
     private final StockOperation stockOperation;
-    private final StockHistoryService stockHistoryService;
 
     /* 물건을 산다. */
     @Transactional

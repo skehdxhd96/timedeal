@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +65,7 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void decrease(OrderItem orderItem) {
 
         log.info("{}의 {} 재고 감소 시작. 현재 재고 : {}", Thread.currentThread(), orderItem.getProduct().getId(), redisTemplate.opsForValue().get(generateKey(orderItem.getProduct().getId())));
@@ -84,6 +86,7 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
+    @Transactional
     @DistributedLock(lockName = "stock_lock", waitTime = 3000, leaseTime = 3000, unit = TimeUnit.MILLISECONDS)
     public void decreaseAll(Order order) {
         try {
@@ -104,6 +107,7 @@ public class TotalStockOperation implements StockOperation{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getStockRemaining(Product product) {
 
         String key = generateKey(product.getId());
@@ -119,7 +123,8 @@ public class TotalStockOperation implements StockOperation{
     }
 
     // TODO : 동시성 문제가 발생 할 수 있나 검사( 두 스레드 동시 접근 시 Redis에 재고가 없어 RDB에서 조회할 때 )
-    private int getStockRemainingIfNotExistInRedis(Product product) {
+    @Transactional(readOnly = true)
+    public int getStockRemainingIfNotExistInRedis(Product product) {
 
         String key = generateKey(product.getId());
 

@@ -31,7 +31,7 @@ public class ProductServiceImpl implements ProductService{
     public Long register(User currentUser, ProductSaveRequest request) {
 
         Product product = ProductAssembler.product(currentUser, request);
-        Product newProduct = productRepository.saveAndFlush(product);
+        Product newProduct = productRepository.save(product);
 
         stockOperation.register(newProduct);
 

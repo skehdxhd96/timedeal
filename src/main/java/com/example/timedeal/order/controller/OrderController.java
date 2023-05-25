@@ -4,6 +4,7 @@ import com.example.timedeal.common.annotation.CurrentUser;
 import com.example.timedeal.common.annotation.LoginCheck;
 import com.example.timedeal.order.dto.OrderSaveRequest;
 import com.example.timedeal.order.dto.OrderSelectResponse;
+import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.service.OrderService;
 import com.example.timedeal.user.dto.UserSelectResponse;
 import com.example.timedeal.user.entity.User;
@@ -25,9 +26,9 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderSelectResponse> doOrder(@Valid @RequestBody OrderSaveRequest request, @CurrentUser User currentUser) {
 
-        OrderSelectResponse orderSelectResponse = orderService.doOrder(request, currentUser);
+        Order order = orderService.doOrder(request, currentUser);
 
-        return ResponseEntity.ok(orderSelectResponse);
+        return ResponseEntity.ok(OrderSelectResponse.of(order));
     }
 
     @LoginCheck(role = LoginCheck.Role.GENERAL)

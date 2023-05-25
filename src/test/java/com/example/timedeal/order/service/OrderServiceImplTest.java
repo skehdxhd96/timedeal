@@ -8,26 +8,33 @@ import com.example.timedeal.order.entity.Order;
 import com.example.timedeal.order.repository.OrderRepository;
 import com.example.timedeal.product.dto.ProductSaveRequest;
 import com.example.timedeal.product.entity.Product;
+import com.example.timedeal.product.entity.ProductStatus;
 import com.example.timedeal.product.repository.ProductRepository;
 import com.example.timedeal.product.service.ProductService;
 import com.example.timedeal.stock.entity.StockHistory;
 import com.example.timedeal.stock.repository.StockHistoryRepository;
+import com.example.timedeal.stock.service.StockOperation;
 import com.example.timedeal.stock.service.StockService;
 import com.example.timedeal.user.entity.Administrator;
 import com.example.timedeal.user.entity.Consumer;
 import com.example.timedeal.user.entity.User;
 import com.example.timedeal.user.entity.UserType;
 import com.example.timedeal.user.repository.UserRepository;
+import com.example.timedeal.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -36,6 +43,9 @@ import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
 
 @Slf4j
 @SpringBootTest
@@ -43,7 +53,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class OrderServiceImplTest {
 
     @Autowired
-    OrderService orderService;
+    OrderServiceImpl orderServiceImpl;
+
+    @Mock
+    UserService userService;
 
     @Autowired
     OrderRepository orderRepository;
@@ -63,9 +76,12 @@ class OrderServiceImplTest {
     @Autowired
     StockService stockService;
 
+    @Autowired
+    StockOperation stockOperation;
+
     @Test
-    @Transactional
-    @DisplayName("동시 주문 테스트")
+//    @Transactional
+    @DisplayName("1000명_재고_동시 주문 테스트")
     void 동시_주문_테스트() throws InterruptedException {
 
         Administrator administrator = Administrator.builder()
@@ -75,17 +91,6 @@ class OrderServiceImplTest {
                 .userType(UserType.ADMINISTRATOR)
                 .build();
 
-        userRepository.saveAndFlush(administrator);
-
-        ProductSaveRequest productSaveRequest = ProductSaveRequest.builder()
-                .productName("test product 1")
-                .description("test product 1 desc")
-                .productPrice(10000)
-                .totalStockQuantity(300)
-                .build();
-
-        productService.register(administrator, productSaveRequest);
-
         Consumer consumer = Consumer.builder()
                 .id(2L)
                 .userName("test")
@@ -94,28 +99,49 @@ class OrderServiceImplTest {
                 .userType(UserType.CONSUMER)
                 .build();
 
-        userRepository.saveAndFlush(consumer);
+        userRepository.save(administrator);
+        userRepository.save(consumer);
+
+        Product product = Product.builder()
+                .createdBy(administrator)
+                .description("test product 1")
+                .productName("test product")
+                .productStatus(ProductStatus.ON)
+                .productEvent(null)
+                .productPrice(10000)
+                .totalStockQuantity(30000)
+                .build();
+
+        productRepository.save(product);
 
         OrderItemSaveRequest orderItemSaveRequest = OrderItemSaveRequest.builder()
                 .itemPrice(10000)
                 .quantity(30)
-                .productId(1001L)
+                .productId(1L)
                 .publishEventId(null)
                 .build();
+
 
         OrderSaveRequest orderSaveRequest = new OrderSaveRequest();
         orderSaveRequest.getOrderItemRequests().add(orderItemSaveRequest);
 
-        Product product = productRepository.findById(1001L).get();
+        List<Product> products = new ArrayList<>();
+        products.add(product);
+        List<Long> ids = new ArrayList<>();
+        ids.add(1L);
 
-        int numberOfThreads = 1;
-        ExecutorService service = Executors.newFixedThreadPool(1);
+        stockOperation.register(product);
+        given(userService.findUser(any(Long.class)))
+                .willReturn(consumer);
+
+        int numberOfThreads = 1000;
+        ExecutorService service = Executors.newFixedThreadPool(10);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
         for (int i = 0; i < numberOfThreads; i++) {
             service.submit(() -> {
                 try {
-                    orderService.doOrder(orderSaveRequest, consumer);
+                    orderServiceImpl.doOrder(orderSaveRequest, consumer);
                 } finally {
                     latch.countDown();
                 }
@@ -126,9 +152,9 @@ class OrderServiceImplTest {
         List<StockHistory> allOrderHistory = stockHistoryRepository.findAll();
         List<Order> allOrder = orderRepository.findAll();
 
-        assertThat(allOrder).hasSize(1);
-        assertThat(allOrderHistory).hasSize(1);
-        assertThat(stockService.getStockRemaining(product)).isEqualTo(270);
+        assertThat(allOrder).hasSize(1000);
+        assertThat(allOrderHistory).hasSize(1000);
+        assertThat(stockService.getStockRemaining(product)).isEqualTo(0);
     }
 
     @Test

@@ -20,14 +20,16 @@ import java.util.List;
 @Getter
 public class Event extends baseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
-    @GenericGenerator(
-            name = "message-id-generator",
-            strategy = "sequence",
-            parameters = {@org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
-                    @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
-                    @org.hibernate.annotations.Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
-    )
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
+//    @GenericGenerator(
+//            name = "message-id-generator",
+//            strategy = "sequence",
+//            parameters = {@org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
+//                    @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
+//                    @org.hibernate.annotations.Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
+//    )
     @Column(name = "event_id")
     private Long id;
 

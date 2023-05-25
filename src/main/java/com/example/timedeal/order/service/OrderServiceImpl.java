@@ -38,10 +38,15 @@ public class OrderServiceImpl implements OrderService{
 
     @Override
     @Transactional(noRollbackFor = {StockException.class})
-    public OrderSelectResponse doOrder(OrderSaveRequest request, User currentUser) {
+    public Order doOrder(OrderSaveRequest request, User currentUser) {
 
         // 빈 주문지 생성
-        Order order = createEmptyOrder(currentUser);
+        Order order = Order.builder()
+                            .orderedBy(currentUser)
+                            .orderStatus(OrderStatus.WAIT)
+                            .build();
+
+        orderRepository.save(order);
 
         List<Product> products = findProductByIds(getProductIds(request));
 //        products.forEach(Product::validated);
@@ -55,7 +60,7 @@ public class OrderServiceImpl implements OrderService{
         stockHistoryService.saveHistory(currentUser, order, MINUS);
         /* 주문 진행 */
 
-        return OrderSelectResponse.of(order);
+        return order;
     }
 
     // TODO : Indexing
@@ -69,6 +74,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserSelectResponse> findOrderedList(Long productId) {
 
         List<Order> orders = orderRepository.findOrderByProductId(productId);
@@ -80,6 +86,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderSelectResponse findOrderDetail(Long orderId, String orderStatus) {
 
         Order order = orderRepository.findOrderByIdAndOrderStatus(orderId, OrderStatus.valueOf(orderStatus))
@@ -88,23 +95,15 @@ public class OrderServiceImpl implements OrderService{
         return OrderSelectResponse.of(order);
     }
 
-    private List<Long> getProductIds(OrderSaveRequest request) {
+    public List<Long> getProductIds(OrderSaveRequest request) {
         return request.getOrderItemRequests()
                                         .stream()
                                         .map(OrderItemSaveRequest::getProductId)
                                         .collect(Collectors.toList());
     }
 
-    public Order createEmptyOrder(User currentUser) {
-        Order order = Order.builder()
-                .orderedBy(currentUser)
-                .orderStatus(OrderStatus.WAIT)
-                .build();
-
-        return orderRepository.save(order);
-    }
-
-    private List<Product> findProductByIds(List<Long> productIds) {
+    @Transactional(readOnly = true)
+    public List<Product> findProductByIds(List<Long> productIds) {
         return productRepository.findProductDetailByProductIds(productIds);
     }
 }
