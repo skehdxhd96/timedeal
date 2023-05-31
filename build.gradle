@@ -9,7 +9,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.1.0'
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
-    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+//    id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 group = 'com.example'
@@ -31,7 +31,7 @@ repositories {
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
+//    set('snippetsDir', file("build/generated-snippets"))
     set('testcontainersVersion', "1.17.2")
 }
 
@@ -42,7 +42,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+//    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     implementation 'mysql:mysql-connector-java'
@@ -87,34 +87,34 @@ configurations {
 }
 
 
-tasks.named('test') {
-    outputs.dir snippetsDir
-    useJUnitPlatform()
-}
-
-tasks.named('asciidoctor') {
-    configurations 'asciidoctorExtensions'
-    inputs.dir snippetsDir
-    dependsOn test
-}
-
-bootJar {
-    dependsOn asciidoctor
-    copy {
-        from "${asciidoctor.outputDir}"
-        into 'src/main/resources/static/docs'
-    }
-}
-
-task copyDocument(type: Copy) {
-    dependsOn asciidoctor
-    from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
-}
-
-build {
-    dependsOn copyDocument
-}
+//tasks.named('test') {
+//    outputs.dir snippetsDir
+//    useJUnitPlatform()
+//}
+//
+//tasks.named('asciidoctor') {
+//    configurations 'asciidoctorExtensions'
+//    inputs.dir snippetsDir
+//    dependsOn test
+//}
+//
+//bootJar {
+//    dependsOn asciidoctor
+//    copy {
+//        from "${asciidoctor.outputDir}"
+//        into 'src/main/resources/static/docs'
+//    }
+//}
+//
+//task copyDocument(type: Copy) {
+//    dependsOn asciidoctor
+//    from file("build/docs/asciidoc")
+//    into file("src/main/resources/static/docs")
+//}
+//
+//build {
+//    dependsOn copyDocument
+//}
 
 jar {
     enabled = false
