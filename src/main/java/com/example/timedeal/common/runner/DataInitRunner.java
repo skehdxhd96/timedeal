@@ -1,8 +1,11 @@
 package com.example.timedeal.common.runner;
 
+import com.example.timedeal.Event.service.EventService;
+import com.example.timedeal.product.dto.ProductEventRequest;
 import com.example.timedeal.product.dto.ProductSaveRequest;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.entity.ProductStatus;
+import com.example.timedeal.product.repository.ProductRepository;
 import com.example.timedeal.product.service.ProductService;
 import com.example.timedeal.user.dto.UserSaveRequest;
 import com.example.timedeal.user.entity.Administrator;
@@ -41,7 +44,7 @@ public class DataInitRunner implements ApplicationRunner {
         }
 
         // 10만개 insert : 터짐
-        for(int count = 1; count <= 100; count++) {
+        for(int count = 1; count <= 10000; count++) {
 
             ProductSaveRequest request = ProductSaveRequest.builder()
                     .productName("test product " + count)
@@ -51,6 +54,10 @@ public class DataInitRunner implements ApplicationRunner {
                     .build();
 
             productService.register(admin, request);
+        }
+
+        for(long count = 1L; count <= 10000L; count++) {
+            productService.assignEvent(count, new ProductEventRequest(1L));
         }
     }
 }
