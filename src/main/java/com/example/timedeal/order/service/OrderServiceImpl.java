@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService{
         orderRepository.save(order);
 
         List<Product> products = findProductByIds(getProductIds(request));
-//        products.forEach(Product::validated);
+        products.forEach(Product::validated);
 
         /* 주문지에 주문아이템 삽입 */
         order.addOrderItems(OrderAssembler.orderItems(products, request, order));

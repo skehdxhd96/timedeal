@@ -29,11 +29,14 @@ public abstract class User extends baseEntity {
     @Column(name = "user_id")
     private Long id;
 
+    @Column(name = "user_type")
     @Enumerated(value = EnumType.STRING)
     private UserType userType;
 
+    @Column(name = "user_name")
     private String userName;
 
+    @Column(name = "user_password")
     private String password;
 
     public User(Long id, String userName, String password, UserType userType) {

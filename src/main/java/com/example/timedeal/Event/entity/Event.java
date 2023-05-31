@@ -40,6 +40,7 @@ public class Event extends baseEntity {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<PublishEvent> publishEvents = new ArrayList<>();
 
+    @Column(name = "event_type")
     private String eventType;
 
     @Builder

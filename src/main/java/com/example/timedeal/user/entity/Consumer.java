@@ -21,6 +21,7 @@ public class Consumer extends User{
     @OneToMany(mappedBy = "orderedBy")
     private List<Order> orders = new ArrayList<>();
 
+    @Column(name = "user_addr")
     private String address;
 
     @Builder
