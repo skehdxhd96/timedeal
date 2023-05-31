@@ -1,4 +1,4 @@
-package com.example.timedeal.event;
+package com.example.timedeal.event.controller;
 
 import com.example.timedeal.Event.dto.*;
 import com.example.timedeal.Event.entity.Event;

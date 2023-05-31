@@ -9,6 +9,7 @@ import com.example.timedeal.product.dto.*;
 import com.example.timedeal.product.entity.Product;
 import com.example.timedeal.product.entity.ProductEvent;
 import com.example.timedeal.product.repository.ProductRepository;
+import com.example.timedeal.stock.service.StockOperation;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,6 +24,7 @@ public class ProductServiceImpl implements ProductService{
 
     private final ProductRepository productRepository;
     private final PublishEventRepository publishEventRepository;
+    private final StockOperation stockOperation;
 
     @Override
     @Transactional
@@ -30,6 +32,8 @@ public class ProductServiceImpl implements ProductService{
 
         Product product = ProductAssembler.product(currentUser, request);
         Product newProduct = productRepository.save(product);
+
+        stockOperation.register(newProduct);
 
         return newProduct.getId();
     }

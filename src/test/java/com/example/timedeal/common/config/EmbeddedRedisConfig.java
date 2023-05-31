@@ -21,7 +21,11 @@ public class EmbeddedRedisConfig {
 
     @PostConstruct
     public void redisServer() throws IOException {
-        redisServer = new RedisServer(redisPort);
+        log.info("Embedded Redis 시작");
+        redisServer = RedisServer.builder()
+                .port(6379)
+                .setting("maxmemory 128M")
+                .build();
         redisServer.start();
     }
 
@@ -29,6 +33,7 @@ public class EmbeddedRedisConfig {
     public void stopRedis() {
         if (redisServer != null) {
             redisServer.stop();
+            log.info("Embedded Redis 종료");
         }
     }
 }

@@ -1,35 +1,49 @@
 package com.example.timedeal.stock.service;
 
+import com.example.timedeal.order.entity.Order;
+import com.example.timedeal.order.entity.OrderStatus;
 import com.example.timedeal.product.entity.Product;
-import com.example.timedeal.product.service.ProductService;
+import com.example.timedeal.stock.dto.StockAssembler;
+import com.example.timedeal.stock.entity.StockHistory;
+import com.example.timedeal.stock.entity.StockHistoryType;
 import com.example.timedeal.stock.repository.StockHistoryRepository;
 import com.example.timedeal.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StockHistoryService {
 
     private final StockHistoryRepository stockHistoryRepository;
-    private final ProductService productService;
-    private final StockOperation stockOperation;
 
     @Transactional
-    public void decrease(Long productId, User user) {
+    public void saveHistory(User currentUser, Order order, StockHistoryType situation) {
 
-        /* 물건을 산다. */
+        log.info("*** 주문 히스토리 저장 시작 ***");
 
-        Product product = productService.findDetails(productId);
+        List<StockHistory> StockHistory = order.getOrderItems().getElements()
+                .stream()
+                .map(o -> StockAssembler.stockHistory(o, currentUser, situation))
+                .collect(Collectors.toList());
 
-        /* 이벤트인 경우 / 일반 상품인 경우 => 이벤트인 경우 시간/재고 체크, 일반상품인 경우 재고 체크 ( 유효성 체크 )*/
+        stockHistoryRepository.saveAll(StockHistory);
 
-
-        /* 재고 감소 */
-
-        /* 히스토리 추가 */
-//        stockHistoryRepository.save()
+        log.info("*** 주문 히스토리 저장 완료 ***");
     }
 
+    @Transactional(readOnly = true)
+    public int getUsedStock(Product product) {
+        return stockHistoryRepository
+                .findByProductIdAndOrderStatus(product.getId(), OrderStatus.SUCCESS)
+                .stream()
+                .mapToInt(StockHistory::getQuantity)
+                .sum();
+    }
 }

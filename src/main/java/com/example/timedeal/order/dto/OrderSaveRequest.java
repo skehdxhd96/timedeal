@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class OrderSaveRequest {
 
-    // 불변성
+    // 불변성 -> Unmodified Class
     @NotNull
     private List<OrderItemSaveRequest> orderItemRequests;
 

@@ -15,7 +15,7 @@ public class PublishEventSelectResponse {
     private String eventName;
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
-    private int eventDesc;
+    private double eventDesc;
 
     @Builder
     public PublishEventSelectResponse(PublishEvent publishEvent) {

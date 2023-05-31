@@ -10,23 +10,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ProductUpdateRequest {
 
-    private String dealType;
     private String productName;
     private int productPrice;
-    private LocalDateTime eventStartTime;
-    private LocalDateTime eventEndTime;
     private String description;
 
-    // TODO: DealType하고 eventStartTIme / eventEndTime 묶여야함.
+    // Event관련 데이터와 Stock관련 데이터는 상품 수정 api로 수정할 수 없다.
 
     @Builder
-    public ProductUpdateRequest(String dealType, String productName, int productPrice,
-                                LocalDateTime eventStartTime, LocalDateTime eventEndTime, String description) {
-        this.dealType = dealType;
+    public ProductUpdateRequest(String productName, int productPrice, String description) {
         this.productName = productName;
         this.productPrice = productPrice;
-        this.eventStartTime = eventStartTime;
-        this.eventEndTime = eventEndTime;
         this.description = description;
     }
 }

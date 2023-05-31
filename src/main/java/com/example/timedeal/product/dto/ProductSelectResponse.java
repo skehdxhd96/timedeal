@@ -13,7 +13,7 @@ public class ProductSelectResponse {
 
     private Long id;
     private String productName;
-    private Double productPrice;
+    private int productPrice;
     private String description;
 
     protected ProductSelectResponse(Product product) {

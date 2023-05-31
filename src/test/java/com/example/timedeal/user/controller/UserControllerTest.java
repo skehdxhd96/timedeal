@@ -1,4 +1,4 @@
-package com.example.timedeal.user;
+package com.example.timedeal.user.controller;
 
 import com.example.timedeal.common.dto.AuthUser;
 import com.example.timedeal.common.factory.UserFactory;

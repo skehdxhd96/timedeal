@@ -1,0 +1,114 @@
+= Product API List
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[resources-get]]
+== Get
+
+[[resources-product-detail-find]]
+=== 상품 상세 조회
+
+==== HTTP request Body
+
+include::{snippets}/find-detail-product/path-parameters.adoc[]
+
+==== HTTP response
+
+include::{snippets}/find-detail-product/http-response.adoc[]
+
+[[resources-post]]
+== Post
+
+[[resources-product-register]]
+=== 상품 등록
+
+==== HTTP request headers
+
+include::{snippets}/product-register/request-headers.adoc[]
+
+==== HTTP request fields
+
+include::{snippets}/product-register/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/product-register/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/product-register/http-response.adoc[]
+
+[[resources-assign-event-to-product]]
+=== 상품 이벤트 할당
+
+==== HTTP request headers
+
+include::{snippets}/assign-event-to-product/request-headers.adoc[]
+
+==== HTTP request fields
+
+include::{snippets}/assign-event-to-product/request-fields.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/assign-event-to-product/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/assign-event-to-product/http-response.adoc[]
+
+[[resources-delete]]
+== Delete
+
+[[resources-product-register]]
+=== 상품 삭제
+
+==== HTTP request headers
+
+include::{snippets}/remove-product/request-headers.adoc[]
+
+==== HTTP request Parameter
+
+include::{snippets}/remove-product/path-parameters.adoc[]
+
+==== HTTP response
+
+include::{snippets}/remove-product/http-response.adoc[]
+
+[[resources-terminate-event-from-product]]
+=== 상품 이벤트 해지
+
+==== HTTP request headers
+
+include::{snippets}/terminate-event-from-product/request-headers.adoc[]
+
+==== HTTP request Parameter
+
+include::{snippets}/terminate-event-from-product/path-parameters.adoc[]
+
+==== HTTP response
+
+include::{snippets}/terminate-event-from-product/http-response.adoc[]
+
+[[resources-put]]
+== Put
+
+[[resources-product-update]]
+=== 상품 수정
+
+==== HTTP request headers
+
+include::{snippets}/update-product/request-headers.adoc[]
+
+==== HTTP request Parameter
+
+include::{snippets}/update-product/path-parameters.adoc[]
+
+==== HTTP request Body
+
+include::{snippets}/update-product/request-fields.adoc[]
+
+==== HTTP response
+
+include::{snippets}/update-product/http-response.adoc[]

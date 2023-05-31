@@ -1,6 +1,7 @@
 package com.example.timedeal.product.dto;
 
 import com.example.timedeal.product.entity.Product;
+import com.example.timedeal.product.entity.ProductStatus;
 import com.example.timedeal.user.entity.User;
 
 public class ProductAssembler {
@@ -13,6 +14,8 @@ public class ProductAssembler {
                 .description(request.getDescription())
                 .productPrice(request.getProductPrice())
                 .productName(request.getProductName())
+                .totalStockQuantity(request.getTotalStockQuantity())
+                .productStatus(ProductStatus.ON)
                 .build();
     }
 

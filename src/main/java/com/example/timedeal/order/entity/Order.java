@@ -9,8 +9,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -19,66 +23,55 @@ import java.util.Objects;
 @Getter
 public class Order extends baseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
+//    @GenericGenerator(
+//            name = "message-id-generator",
+//            strategy = "sequence",
+//            parameters = {@org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
+//                    @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
+//                    @org.hibernate.annotations.Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
+//    )
     @Column(name = "order_id")
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "consumer_id")
     private User orderedBy;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
     @Embedded
     private OrderItems orderItems;
-
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;
-
-    private int originalPrice;
-
     private int totalPrice;
 
-    private Long publishEventId;
+    // TODO : totalPrice
 
     @Builder
-    public Order(Long id, User orderedBy, Product product, OrderStatus orderStatus,
-                 int originalPrice, int totalPrice, Long publishEventId) {
+    public Order(Long id, User orderedBy, OrderStatus orderStatus, int totalPrice) {
         this.id = id;
         this.orderedBy = orderedBy;
-        this.product = product;
         this.orderStatus = orderStatus;
-        this.originalPrice = originalPrice;
         this.totalPrice = totalPrice;
-        this.publishEventId = publishEventId;
+        this.orderItems = new OrderItems();
     }
 
-    //TODO: Product Dto 재정의
-
-    public void add(Product product) {
-        OrderItem orderItem = OrderItem.builder()
-                .itemPrice(product.getProductPrice())
-                .order(this)
-                .product(product)
-//                .itemRealPrice()
-//                .publishEventId()
-                .build();
-
-        orderItems.add(orderItem);
+    public void success() {
+        this.orderStatus = OrderStatus.SUCCESS;
     }
 
-    public void remove(Product product) {
-        OrderItem orderItem = OrderItem.builder()
-                .itemPrice(product.getProductPrice())
-                .order(this)
-                .product(product)
-//                .itemRealPrice()
-//                .publishEventId()
-                .build();
+    public void failed() {
+        this.orderStatus = OrderStatus.FAILED;
+    }
+    public void addOrderItems(List<OrderItem> items) {
+        orderItems.addAll(this, items);
+        setTotalPrice();
+    }
 
-        orderItems.remove(orderItem);
+    public void setTotalPrice() {
+        this.totalPrice = this.getOrderItems().getElements()
+                .stream()
+                .mapToInt(o -> o.getItemRealPrice() * o.getQuantity())
+                .sum();
     }
 
     @Override
@@ -92,5 +85,16 @@ public class Order extends baseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", orderedBy=" + orderedBy +
+                ", orderItems=" + orderItems +
+                ", orderStatus=" + orderStatus +
+                ", totalPrice=" + totalPrice +
+                '}';
     }
 }

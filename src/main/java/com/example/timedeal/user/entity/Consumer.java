@@ -12,15 +12,16 @@ import java.util.List;
 
 @Entity
 @Table(name = "consumer")
-@PrimaryKeyJoinColumn(name = "customer_id")
+@PrimaryKeyJoinColumn(name = "consumer_id")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DiscriminatorValue(value = "CUSTOMER")
+@DiscriminatorValue(value = "CONSUMER")
 @Getter
 public class Consumer extends User{
 
     @OneToMany(mappedBy = "orderedBy")
     private List<Order> orders = new ArrayList<>();
 
+    @Column(name = "user_addr")
     private String address;
 
     @Builder

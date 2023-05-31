@@ -1,5 +1,9 @@
 package com.example.timedeal.common.config;
 
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +35,16 @@ public class RedisConfig {
 
         return new LettuceConnectionFactory(
                 redisStandaloneConfiguration);
+    }
+
+    @Bean
+    public RedissonClient redissonClient() {
+
+        Config config = new Config();
+        config.useSingleServer()
+                .setAddress("redis://"+this.host+":"+this.port);
+
+        return Redisson.create(config);
     }
 
     @Bean

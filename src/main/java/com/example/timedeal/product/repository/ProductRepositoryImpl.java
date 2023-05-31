@@ -1,7 +1,6 @@
 package com.example.timedeal.product.repository;
 
 import com.example.timedeal.Event.entity.EventStatus;
-import com.example.timedeal.common.entity.RestPage;
 import com.example.timedeal.product.dto.ProductSearchRequest;
 import com.example.timedeal.product.entity.Product;
 import com.querydsl.core.types.dsl.BooleanExpression;

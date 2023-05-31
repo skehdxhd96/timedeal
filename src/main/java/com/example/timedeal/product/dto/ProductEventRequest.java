@@ -13,4 +13,7 @@ public class ProductEventRequest {
     @NotNull
     private Long publishEventId;
 
+    public ProductEventRequest(Long publishEventId) {
+        this.publishEventId = publishEventId;
+    }
 }

@@ -1,15 +1,17 @@
 package com.example.timedeal.stock.service;
 
-import com.example.timedeal.stock.dto.Stock;
-import org.springframework.data.redis.core.RedisOperations;
+import com.example.timedeal.order.entity.Order;
+import com.example.timedeal.order.entity.OrderItem;
+import com.example.timedeal.product.entity.Product;
 
 public interface StockOperation {
 
     String generateKey(Long productId);
 
-    void add(Stock stock);
-
-    void remove(Stock stock);
-
-    Long getTotalUsedCount(RedisOperations<String, String> redisOperations, Stock stock);
+    void register(Product product);
+    void increase(OrderItem orderItem);
+    void increaseAll(Order order);
+    void decrease(OrderItem orderItem);
+    void decreaseAll(Order order);
+    int getStockRemaining(Product product);
 }

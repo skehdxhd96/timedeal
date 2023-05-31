@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,7 +20,16 @@ import java.util.List;
 @Getter
 public class Event extends baseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "message-id-generator")
+//    @GenericGenerator(
+//            name = "message-id-generator",
+//            strategy = "sequence",
+//            parameters = {@org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "hibernate_sequence"),
+//                    @org.hibernate.annotations.Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1000"),
+//                    @org.hibernate.annotations.Parameter(name = AvailableSettings.PREFERRED_POOLED_OPTIMIZER, value = "pooled-lotl")}
+//    )
     @Column(name = "event_id")
     private Long id;
 
@@ -28,6 +40,7 @@ public class Event extends baseEntity {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<PublishEvent> publishEvents = new ArrayList<>();
 
+    @Column(name = "event_type")
     private String eventType;
 
     @Builder
@@ -38,6 +51,7 @@ public class Event extends baseEntity {
         this.eventType = eventType;
     }
 
+    // TODO 로직 수정해야 함.
     public void publish(PublishEvent publishEvent) {
         publishEvent.setEvent(this);
         this.publishEvents.add(publishEvent);
