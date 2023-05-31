@@ -25,6 +25,13 @@ public class ProductSelectResponse {
 
     }
 
+    protected ProductSelectResponse(Long id, String productName, int productPrice, String description) {
+        this.id = id;
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.description = description;
+    }
+
     public static ProductSelectResponse of(Product product) {
         return new ProductSelectResponse(product);
     }

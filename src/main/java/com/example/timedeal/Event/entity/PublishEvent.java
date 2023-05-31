@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "publish_event")
+@Table(name = "publish_event", indexes = @Index(name = "idx__event", columnList = "event_code"))
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
@@ -52,6 +52,7 @@ public class PublishEvent extends baseEntity {
     private LocalDateTime eventStartTime;
     private LocalDateTime eventEndTime;
     private double eventDesc;
+    @Column(name = "event_code")
     private String eventCode;
 
     @Builder
