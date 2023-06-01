@@ -43,8 +43,7 @@ public class DataInitRunner implements ApplicationRunner {
             userService.joinMember(request);
         }
 
-        // 10만개 insert : 터짐
-        for(int count = 1; count <= 10000; count++) {
+        for(int count = 1; count <= 1000000; count++) {
 
             ProductSaveRequest request = ProductSaveRequest.builder()
                     .productName("test product " + count)

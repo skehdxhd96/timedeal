@@ -23,31 +23,31 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
 
-    @Override
-    public Page<Product> findAllProductOnEvent(Pageable pageable, String eventCode) {
-
-        List<Product> products = queryFactory.selectFrom(product)
-                .innerJoin(product.productEvent, productEvent).fetchJoin()
-                .innerJoin(productEvent.publishEvent, publishEvent).fetchJoin()
-                .where(publishEvent.eventCode.eq(eventCode)
-                        .and(publishEvent.eventStatus.eq(EventStatus.IN_PROGRESS)
-                        .and(publishEvent.eventStartTime.before(LocalDateTime.now()))
-                        .and(publishEvent.eventEndTime.after(LocalDateTime.now()))))
-                .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
-                .fetch();
-
-        Long count = queryFactory.select(product.count())
-                .from(product)
-                .innerJoin(product.productEvent, productEvent)
-                .innerJoin(productEvent.publishEvent, publishEvent)
-                .where(publishEvent.eventCode.eq(eventCode)
-                                .and(publishEvent.eventStartTime.before(LocalDateTime.now()))
-                                .and(publishEvent.eventEndTime.after(LocalDateTime.now())))
-                .fetchFirst();
-
-        return PageableExecutionUtils.getPage(products, pageable, () -> count);
-    }
+//    @Override
+//    public Page<Product> findAllProductOnEvent(Pageable pageable, String eventCode) {
+//
+//        List<Product> products = queryFactory.selectFrom(product)
+//                .innerJoin(product.productEvent, productEvent).fetchJoin()
+//                .innerJoin(productEvent.publishEvent, publishEvent).fetchJoin()
+//                .where(publishEvent.eventCode.eq(eventCode)
+//                        .and(publishEvent.eventStatus.eq(EventStatus.IN_PROGRESS)
+//                        .and(publishEvent.eventStartTime.before(LocalDateTime.now()))
+//                        .and(publishEvent.eventEndTime.after(LocalDateTime.now()))))
+//                .limit(pageable.getPageSize())
+//                .offset(pageable.getOffset())
+//                .fetch();
+//
+//        Long count = queryFactory.select(product.count())
+//                .from(product)
+//                .innerJoin(product.productEvent, productEvent)
+//                .innerJoin(productEvent.publishEvent, publishEvent)
+//                .where(publishEvent.eventCode.eq(eventCode)
+//                                .and(publishEvent.eventStartTime.before(LocalDateTime.now()))
+//                                .and(publishEvent.eventEndTime.after(LocalDateTime.now())))
+//                .fetchFirst();
+//
+//        return PageableExecutionUtils.getPage(products, pageable, () -> count);
+//    }
 
     @Override
     public Page<Product> findAllProducts(Pageable pageable, ProductSearchRequest productSearchRequest) {
