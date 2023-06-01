@@ -26,14 +26,5 @@ Numble - 타임 딜 서비스 구축 프로젝트
 ### 기술적으로 고민했던 부분과 해결 일지
 ### 성능측정 및 개선
 * [[#1] 초기 서버 구조 설계 과정](https://ndm-tech.tistory.com/70)
+* [[#2] 상품 조회 api 테스트와 성능 개선 일지](https://ndm-tech.tistory.com/85)
 - - -
-
-## 5. 모아보기 📌
-### [Branch 전략](https://github.com/skehdxhd96/timedeal/wiki/Git-Flow-&-Commit-Message-Convention)
-### [Use-case](https://github.com/skehdxhd96/timedeal/wiki/%EA%B8%B0%EB%8A%A5-%EB%AA%85%EC%84%B8)
-### [API 서버](https://www.naver.com)
-### [API 명세](https://www.naver.com)
-- - -
-
-## 6. 회고록
-
