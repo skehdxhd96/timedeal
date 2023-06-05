@@ -9,7 +9,7 @@ Numble - 타임 딜 서비스 구축 프로젝트
 
 ## 2. ERD 및 와이어프레임 📌
 #### [이미지가 안나오면 여기서 ERD를 확인할 수 있습니다.](https://www.erdcloud.com/d/RtPz9Da6PJ3A5mwBG)
-<img src = "https://github.com/skehdxhd96/timedeal/assets/55571682/89bf3264-1557-46a3-a6b8-1ce1ddc55eaa" width = "90%" height = "400">
+<img src = "https://github.com/skehdxhd96/timedeal/assets/55571682/66fb4b44-97a2-4c47-8cd5-0818fd1bdfaf" width = "90%" height = "400">
 
 - - -
 
