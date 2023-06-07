@@ -29,5 +29,5 @@ Numble - 타임 딜 서비스 구축 프로젝트
 * [[#2] 상품 조회 / 주문 api를 설계하기 까지의 고민 과정](https://ndm-tech.tistory.com/86)
 * [[#3] 상품 조회 api 테스트와 성능 개선 일지](https://ndm-tech.tistory.com/85)
 * [[#4] 상품 재고 동시성을 해결하기 까지의 고민 과정](https://ndm-tech.tistory.com/88)
-* [[#5] 상품 조회 시스템 디자인 개선하기](https://ndm-tech.tistory.com/87)
+* [[#5] 상품 조회 시스템 디자인 개선하기(feat. @Cacheable, MongoDB)](https://ndm-tech.tistory.com/87)
 - - -
