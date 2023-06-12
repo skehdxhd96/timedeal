@@ -14,7 +14,7 @@ plugins {
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '1.8'
 
 configurations {
     asciidoctorExtensions
@@ -59,6 +59,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus'
     testImplementation 'org.mockito:mockito-inline:3.6.0'
     implementation 'org.redisson:redisson-spring-boot-starter:3.21.3'
+    implementation ('org.springframework.boot:spring-boot-starter-data-mongodb-reactive')
     // QueryDSL
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"

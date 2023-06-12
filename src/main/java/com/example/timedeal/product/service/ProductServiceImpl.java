@@ -99,6 +99,9 @@ public class ProductServiceImpl implements ProductService{
         if(isExists)
             throw new BusinessException(ErrorCode.ALREADY_HAS_EVENT);
 
+
+        // TODO : Kafka를 통해 MongoDB 발행 이벤트를 발행한다.
+
         publishEvent.register(product);
     }
 
@@ -108,6 +111,8 @@ public class ProductServiceImpl implements ProductService{
 
         Product product = findProductById(productId);
         PublishEvent publishEvent = findPublishEventById(publishEventId);
+
+        // TODO : Mongo에 데이터가 존재한다면, 삭제한다.
 
         publishEvent.terminate(product);
     }
